@@ -1,0 +1,58 @@
+pipeline:
+
+  validate:
+    image: quay.io/ukhomeofficedigital/dq-packer-ansible
+    commands:
+      - export HOME=/home/packer
+      - packer validate packer.json
+
+  inspect:
+    image: quay.io/ukhomeofficedigital/dq-packer-ansible
+    commands:
+      - export HOME=/home/packer
+      - packer inspect packer.json
+
+  build:
+    image: quay.io/ukhomeofficedigital/dq-packer-ansible
+    commands:
+      - export HOME=/home/packer
+      - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
+      - packer build packer.json
+    secrets:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+    when:
+      event: push
+
+  packer-copy-notprod:
+    image: quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
+    commands:
+      - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux*""
+      - export aws_id=$${NOTPROD_ACC_ID}
+      - export aws_key=$${NOTPROD_ACC_KEY}
+      - export region=eu-west-2
+      - export HOME=/home/packer
+      - cd /home/packer
+      - ./build.sh
+    secrets:
+      - NOTPROD_ACC_ID
+      - NOTPROD_ACC_KEY
+    when:
+      event: push
+
+  packer-copy-prod:
+    image: quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
+    commands:
+      - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux*""
+      - export aws_id=$${PROD_ACC_ID}
+      - export aws_key=$${PROD_ACC_KEY}
+      - export region=eu-west-2
+      - export HOME=/home/packer
+      - cd /home/packer
+      - ./build.sh
+    secrets:
+      - PROD_ACC_ID
+      - PROD_ACC_KEY
+    when:
+      event: push
+      branch: master

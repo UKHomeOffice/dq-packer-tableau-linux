@@ -1,0 +1,176 @@
+---
+- name: Pre-reqs for ansible to run
+  hosts: all
+  gather_facts: false
+  become: yes
+  pre_tasks:
+    - raw: test -e /usr/bin/python || ( yum -y update && yum install -y python-minimal )
+
+- name: Build Tableau Linux Server
+  hosts: all
+  become: true
+  tasks:
+  - name: Set machine hostname
+    hostname:
+      name: TABLEAU-LINUX
+
+  - name: Yum Install Pre Dependencies
+    yum: name={{ item }}
+    with_items:
+      - epel-release
+      - gcc
+      - pcre-devel
+      - openssl-devel
+      - zlib-devel
+      - wget
+    become: true
+
+  - name: Yum Install Dependencies
+    yum: name={{ item }}
+    with_items:
+      - python-pip
+      - git
+      - cloud-utils
+      - nodejs
+    become: true
+
+  - name: Install Python 2.7
+    unarchive:
+     src: https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz
+     dest: /usr/src
+     remote_src: yes
+    become: true
+
+  - name: Configure Python 2.7
+    shell: ./configure
+    args:
+      chdir: /usr/src/Python-2.7.10
+      creates: /usr/src/Python-2.7.10/Modules
+    become: true
+
+  - name: Pip Install Dependencies
+    pip: 'name={{ item }}'
+    with_items:
+      - AWSCLI
+      - ftputil
+      - virtualenv
+      - psycopg2-binary
+    become: true
+
+  - name: GET config files from DQ-config-bucket
+    shell: '{{ item }}'
+    with_items:
+      - aws configure set aws_access_key_id '{{user_access_key}}'
+      - aws configure set aws_secret_access_key '{{secret_access_key}}'
+      - aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+
+  - name: Remove AWS config
+    shell: rm ~/.aws/credentials
+    become: true
+
+  - name: Download cloudwatch logs agent
+    get_url:
+      url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
+      dest: /tmp/awslogs-agent-setup.py
+      mode: "+x"
+
+  - name: Cloudwatch logs config
+    copy:
+      dest: /tmp/cwlogs.conf
+      content: |
+        [general]
+        state_file = /var/awslogs/state/agent-state
+        [/var/log/messages]
+        file = /var/log/messages
+        log_group_name = /Centos_Server/messages
+        log_stream_name = {hostname}
+        datetime_format = %b %d %H:%M:%S
+        [/Centos_Server/cloud-init]
+        file = /var/log/cloud-init.log
+        log_group_name = /Centos_Server/cloud-init
+        log_stream_name = {hostname}
+        datetime_format = %Y-%m-%d %H:%M:%S,%f
+        [/Centos_Server/cloud-init/output]
+        file = /var/log/cloud-init-output.log
+        log_group_name = /Centos_Server/cloud-init/output
+        log_stream_name = {hostname}
+        datetime_format = %Y-%m-%d %H:%M:%S,%f
+        [/Centos_Server/cron]
+        file = /var/log/cron
+        log_group_name = /Centos_Server/cron
+        log_stream_name = {hostname}
+        datetime_format = %Y-%m-%d %H:%M:%S,%f
+        [/Centos_Server/secure]
+        file = /var/log/secure
+        log_group_name = /Centos_Server/secure
+        log_stream_name = {hostname}
+        datetime_format = %Y-%m-%d %H:%M:%S,%f
+        [/Centos_Server/yum]
+        file = /var/log/yum.log
+        log_group_name = /Centos_Server/yum
+        log_stream_name = {hostname}
+        datetime_format = %Y-%m-%d %H:%M:%S,%f
+
+  - name: Install cloudwatch log agent
+    environment:
+      LC_ALL: C
+    shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf
+    args:
+      creates: /var/awslogs/etc/aws.conf
+
+  - name: Copy cloudwatch logs starter
+    copy:
+      src: scripts/startcloudwatchlogs.sh
+      dest: /usr/bin/startcloudwatchlogs.sh
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: Make Cron Job to start awslogs with right region
+    cron:
+      name: Start awslogs
+      special_time: reboot
+      job: /usr/bin/startcloudwatchlogs.sh
+
+  - name: Install Postgresql (currently 9.5.3)
+    shell: '{{ item }}'
+    with_items:
+      - yum update -y
+      - yum install -y /tmp/install/tableau-postgresql-odbc-gold-master.x86_64.rpm
+
+  - name: Install Tableau Server (currently 2018.3.2)
+    shell: '{{ item }}'
+    with_items:
+      - yum update -y
+      - yum install -y /tmp/install/tableau-server-gold-master.x86_64.rpm
+
+  - name: Install tabcmd
+    shell: '{{ item }}'
+    with_items:
+      - yum update -y
+      - yum install -y /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
+
+  - name: Initialise TSM (version hardcoded, unfortunately)
+    shell: '{{ item }}'
+    with_items:
+      - /opt/tableau/tableau_server/packages/scripts.2018.3.2/initialize-tsm --accepteula
+
+  - name: Set DNS Resolver Options
+    blockinfile:
+      path: /etc/sysconfig/network
+      block: |
+        RES_OPTIONS="rotate timeout:1 attempts:1"
+
+  - name: Secure sshd_config
+    lineinfile: dest=/etc/ssh/sshd_config
+                regexp="^PermitRootLogin"
+                line="PermitRootLogin no"
+                state=present
+  - lineinfile: dest=/etc/ssh/sshd_config
+                regexp="^PasswordAuthentication"
+                line="PasswordAuthentication no"
+                state=present
+  - lineinfile: dest=/etc/ssh/sshd_config
+                regexp="^X11Forwarding"
+                line="X11Forwarding no"
+                state=present
