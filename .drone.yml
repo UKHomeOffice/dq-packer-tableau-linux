@@ -27,7 +27,7 @@ pipeline:
   packer-copy-notprod:
     image: quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
     commands:
-      - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux*""
+      - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
       - export aws_id=$${NOTPROD_ACC_ID}
       - export aws_key=$${NOTPROD_ACC_KEY}
       - export region=eu-west-2
@@ -44,7 +44,7 @@ pipeline:
   packer-copy-prod:
     image: quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
     commands:
-      - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux*""
+      - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
       - export aws_id=$${PROD_ACC_ID}
       - export aws_key=$${PROD_ACC_KEY}
       - export region=eu-west-2
