@@ -10,9 +10,6 @@
   hosts: all
   become: true
   tasks:
-  - name: Set machine hostname
-    hostname:
-      name: TABLEAU-LINUX
 
   - name: Yum Install Pre Dependencies
     yum: name={{ item }}
@@ -52,9 +49,6 @@
     pip: 'name={{ item }}'
     with_items:
       - AWSCLI
-      - ftputil
-      - virtualenv
-      - psycopg2-binary
     become: true
 
   - name: GET config files from DQ-config-bucket
