@@ -11,6 +11,10 @@
   become: true
   tasks:
 
+  - name: Create tableau_srv user
+    user:
+      name: tableau_srv
+
   - name: Yum Install Pre Dependencies
     yum: name={{ item }}
     with_items:
@@ -142,11 +146,6 @@
     with_items:
       - yum update -y
       - yum install -y /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
-
-#  - name: Initialise TSM (version hardcoded, unfortunately)
-#    shell: '{{ item }}'
-#    with_items:
-#      - /opt/tableau/tableau_server/packages/scripts.2018.3.2/initialize-tsm --accepteula
 
   - name: Set DNS Resolver Options
     blockinfile:
