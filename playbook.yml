@@ -28,7 +28,6 @@
       - python-pip
       - git
       - cloud-utils
-      - nodejs
     become: true
 
   - name: Install Python 2.7
