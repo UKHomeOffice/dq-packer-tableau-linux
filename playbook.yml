@@ -72,11 +72,6 @@
   - name: GET config files from DQ-config-bucket
     shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
 
-
-  - name: Remove AWS config
-    shell: rm ~/.aws/credentials
-    become: true
-
   - name: Download cloudwatch logs agent
     get_url:
       url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
