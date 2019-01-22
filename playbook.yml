@@ -154,6 +154,13 @@
       - yum update -y
       - yum install -y /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
 
+  - name: Install zip & unzip - to extract Tableau files
+    shell: '{{ item }}'
+    with_items:
+      - yum update -y
+      - yum install -y zip
+      - yum install -y unzip
+
   - name: Set DNS Resolver Options
     blockinfile:
       path: /etc/sysconfig/network
