@@ -49,20 +49,6 @@
       - cloud-utils
     become: true
 
-  - name: GET config files from DQ-config-bucket
-    shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
-
-  - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
-    yum:
-      name:
-#      - update -y
-        - /tmp/install/tableau-postgresql-odbc-gold-master.x86_64.rpm
-        - /tmp/install/tableau-server-gold-master.x86_64.rpm
-        - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
-        - zip
-        - unzip
-
-
   - name: Install Python 2.7
     unarchive:
      src: https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz
@@ -82,6 +68,19 @@
     with_items:
       - AWSCLI
     become: true
+
+  - name: GET config files from DQ-config-bucket
+    shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+
+  - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
+    yum:
+      name:
+#      - update -y
+        - /tmp/install/tableau-postgresql-odbc-gold-master.x86_64.rpm
+        - /tmp/install/tableau-server-gold-master.x86_64.rpm
+        - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
+        - zip
+        - unzip
 
   - name: Download cloudwatch logs agent
     get_url:
