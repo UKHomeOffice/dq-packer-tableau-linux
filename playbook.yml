@@ -49,6 +49,17 @@
       - cloud-utils
     become: true
 
+  - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
+    yum: name={{ item }}
+    with_items:
+      - update -y
+      - /tmp/install/tableau-postgresql-odbc-gold-master.x86_64.rpm
+      - /tmp/install/tableau-server-gold-master.x86_64.rpm
+      - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
+      - zip
+      - unzip
+
+
   - name: Install Python 2.7
     unarchive:
      src: https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz
@@ -136,30 +147,30 @@
       special_time: reboot
       job: /usr/bin/startcloudwatchlogs.sh
 
-  - name: Install Postgresql (currently 9.5.3)
-    shell: '{{ item }}'
-    with_items:
-      - yum update -y
-      - yum install -y /tmp/install/tableau-postgresql-odbc-gold-master.x86_64.rpm
-
-  - name: Install Tableau Server (currently 2018.3.2)
-    shell: '{{ item }}'
-    with_items:
-      - yum update -y
-      - yum install -y /tmp/install/tableau-server-gold-master.x86_64.rpm
-
-  - name: Install tabcmd
-    shell: '{{ item }}'
-    with_items:
-      - yum update -y
-      - yum install -y /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
-
-  - name: Install zip & unzip - to extract Tableau files
-    shell: '{{ item }}'
-    with_items:
-      - yum update -y
-      - yum install -y zip
-      - yum install -y unzip
+#  - name: Install Postgresql (currently 9.5.3)
+#    shell: '{{ item }}'
+#    with_items:
+#      - yum update -y
+#      - yum install -y /tmp/install/tableau-postgresql-odbc-gold-master.x86_64.rpm
+#
+#  - name: Install Tableau Server (currently 2018.3.2)
+#    shell: '{{ item }}'
+#    with_items:
+#      - yum update -y
+#      - yum install -y /tmp/install/tableau-server-gold-master.x86_64.rpm
+#
+#  - name: Install tabcmd
+#    shell: '{{ item }}'
+#    with_items:
+#      - yum update -y
+#      - yum install -y /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
+#
+#  - name: Install zip & unzip - to extract Tableau files
+#    shell: '{{ item }}'
+#    with_items:
+#      - yum update -y
+#      - yum install -y zip
+#      - yum install -y unzip
 
   - name: Set DNS Resolver Options
     blockinfile:
