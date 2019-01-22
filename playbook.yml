@@ -70,15 +70,7 @@
     become: true
 
   - name: GET config files from DQ-config-bucket
-    shell: '{{ item }}'
-    with_items:
-      - aws configure set aws_access_key_id '{{user_access_key}}'
-      - aws configure set aws_secret_access_key '{{secret_access_key}}'
-      - aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
-
-  - name: Remove AWS config
-    shell: rm ~/.aws/credentials
-    become: true
+    shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
 
   - name: Download cloudwatch logs agent
     get_url:
