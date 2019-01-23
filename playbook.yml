@@ -69,7 +69,7 @@
       - AWSCLI
     become: true
 
-  - name: GET config files from DQ-config-bucket
+  - name: GET Tableau files from DQ-config-bucket
     shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
 
   - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
@@ -87,42 +87,8 @@
       dest: /tmp/awslogs-agent-setup.py
       mode: "+x"
 
-  - name: Cloudwatch logs config
-    copy:
-      dest: /tmp/cwlogs.conf
-      content: |
-        [general]
-        state_file = /var/awslogs/state/agent-state
-        [/var/log/messages]
-        file = /var/log/messages
-        log_group_name = /Centos_Server/messages
-        log_stream_name = {hostname}
-        datetime_format = %b %d %H:%M:%S
-        [/Centos_Server/cloud-init]
-        file = /var/log/cloud-init.log
-        log_group_name = /Centos_Server/cloud-init
-        log_stream_name = {hostname}
-        datetime_format = %Y-%m-%d %H:%M:%S,%f
-        [/Centos_Server/cloud-init/output]
-        file = /var/log/cloud-init-output.log
-        log_group_name = /Centos_Server/cloud-init/output
-        log_stream_name = {hostname}
-        datetime_format = %Y-%m-%d %H:%M:%S,%f
-        [/Centos_Server/cron]
-        file = /var/log/cron
-        log_group_name = /Centos_Server/cron
-        log_stream_name = {hostname}
-        datetime_format = %Y-%m-%d %H:%M:%S,%f
-        [/Centos_Server/secure]
-        file = /var/log/secure
-        log_group_name = /Centos_Server/secure
-        log_stream_name = {hostname}
-        datetime_format = %Y-%m-%d %H:%M:%S,%f
-        [/Centos_Server/yum]
-        file = /var/log/yum.log
-        log_group_name = /Centos_Server/yum
-        log_stream_name = {hostname}
-        datetime_format = %Y-%m-%d %H:%M:%S,%f
+  - name: GET Cloudwatch logs config from DQ-config-bucket
+    shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp/cwlogs.conf
 
   - name: Install cloudwatch log agent
     environment:
