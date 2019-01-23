@@ -88,7 +88,7 @@
       mode: "+x"
 
   - name: GET Cloudwatch logs config from DQ-config-bucket
-    shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp/cwlogs.conf
+    shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
 
   - name: Install cloudwatch log agent
     environment:
