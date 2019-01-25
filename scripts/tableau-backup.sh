@@ -12,10 +12,6 @@ date
 echo "==========================="
 echo "== Log file: /var/log/last-tab-backup-to-s3.log"
 
-# Cleanup - delete local backups older than 24 hours (ish) before we generate a new one
-echo "== Removing old backup files"
-find /var/opt/tableau/tableau_server/data/tabsvc/files/backups/ -type f -name '*.tsbak' -mmin +1439 | xargs -I {} rm {}
-
 # Login to TSM
 echo "== Authenticating with TSM"
 /opt/tableau/tableau_server/packages/customer-bin.*/tsm login -u $TAB_SRV_USER -p $TAB_SRV_PASSWORD
@@ -29,4 +25,8 @@ export NEWEST_BACKUP_FOR_S3=`find /var/opt/tableau/tableau_server/data/tabsvc/fi
 
 # Upload backup to S3
 echo "== Uploading backup to S3"
-aws s3 cp $NEWEST_BACKUP_FOR_S3 $DATA_ARCHIVE_TAB_INT_BACKUP_URL && echo "== Complete!"
+aws s3 cp $NEWEST_BACKUP_FOR_S3 $DATA_ARCHIVE_TAB_INT_BACKUP_URL
+
+# Cleanup - delete local backups older than 24 hours (ish)
+echo "== Removing old backup files"
+find /var/opt/tableau/tableau_server/data/tabsvc/files/backups/ -type f -name '*.tsbak' -mmin +1439 | xargs -I {} rm {} && echo "== Complete!"
