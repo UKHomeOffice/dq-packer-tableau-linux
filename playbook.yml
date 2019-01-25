@@ -24,7 +24,7 @@
 
   - name: Copy Tableau to S3 backup script
     copy:
-      src: scripts/tableau_backup.sh
+      src: scripts/tableau-backup.sh
       dest: /home/tableau_srv/scripts/tableau-backup.sh
       owner: tableau_srv
       group: tableau_srv
