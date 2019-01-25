@@ -28,7 +28,7 @@
       dest: /home/tableau_srv/scripts/tableau_backup.sh
       owner: tableau_srv
       group: tableau_srv
-      mode: 0744
+      mode: 0774
 
   - name: Create Tableau backup to S3 log file for tableau_srv user
     file:
