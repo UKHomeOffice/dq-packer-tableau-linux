@@ -25,7 +25,7 @@
   - name: Copy Tableau to S3 backup script
     copy:
       src: scripts/tableau_backup.sh
-      dest: /home/tableau_srv/scripts/tableau_backup.sh
+      dest: /home/tableau_srv/scripts/tableau-backup.sh
       owner: tableau_srv
       group: tableau_srv
       mode: 0774
@@ -43,7 +43,7 @@
       user: tableau_srv
       minute: 0
       hour: 19
-      job: /home/tableau_srv/scripts/tableau_backup.sh
+      job: /home/tableau_srv/scripts/tableau-backup.sh
 
   - name: Yum Install Pre Dependencies
     yum: name={{ item }}
