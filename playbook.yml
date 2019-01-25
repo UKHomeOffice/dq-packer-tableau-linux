@@ -22,13 +22,28 @@
       mode: 0700
       owner: tableau_srv
 
-  - name: Create Tableau backup directory for tableau_srv user
+  - name: Copy Tableau to S3 backup script
+    copy:
+      src: scripts/tableau_backup.sh
+      dest: /home/tableau_srv/scripts/tableau_backup.sh
+      owner: tableau_srv
+      group: tableau_srv
+      mode: 0744
+
+  - name: Create Tableau backup to S3 log file for tableau_srv user
     file:
-      path: /home/tableau_srv/tableau_backups
-      state: directory
-      mode: 0755
+      path: /var/log/last-tab-backup-to-s3.log
+      state: file
+      mode: 0644
       owner: tableau_srv
 
+  - name: Create cronjob to run Tableau to S3 backup script every day at 7PM
+    cron:
+      name: Tableau to S3 backup
+      user: tableau_srv
+      minute: 0
+      hour: 19
+      job: /home/tableau_srv/scripts/tableau_backup.sh
 
   - name: Yum Install Pre Dependencies
     yum: name={{ item }}
