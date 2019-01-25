@@ -52,7 +52,7 @@
       user: tableau_srv
       minute: 0
       hour: 19
-      job: /home/tableau_srv/scripts/tableau-backup.sh
+      job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
   - name: Yum Install Pre Dependencies
     yum: name={{ item }}
