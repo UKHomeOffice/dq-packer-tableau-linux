@@ -22,6 +22,13 @@
       mode: 0700
       owner: tableau_srv
 
+  - name: Create scripts directory for tableau_srv user
+    file:
+      path: /home/tableau_srv/scripts
+      state: directory
+      mode: 0755
+      owner: tableau_srv
+
   - name: Copy Tableau to S3 backup script
     copy:
       src: scripts/tableau-backup.sh
@@ -33,9 +40,9 @@
   - name: Create Tableau backup to S3 log file for tableau_srv user
     file:
       path: /var/log/last-tab-backup-to-s3.log
-      state: file
-      mode: 0644
       owner: tableau_srv
+      group: tableau_srv
+      mode: 0644
 
   - name: Create cronjob to run Tableau to S3 backup script every day at 7PM
     cron:
