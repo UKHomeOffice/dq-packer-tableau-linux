@@ -37,9 +37,11 @@
       group: tableau_srv
       mode: 0774
 
-  - name: Create Tableau backup to S3 log file for tableau_srv user
-    file:
-      path: /var/log/last-tab-backup-to-s3.log
+  - name: Ensure Tableau backup to S3 log file for tableau_srv user exists
+    copy:
+      content: ""
+      dest: /var/log/last-tab-backup-to-s3.log
+      force: no
       owner: tableau_srv
       group: tableau_srv
       mode: 0644
