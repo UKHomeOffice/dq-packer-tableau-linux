@@ -24,19 +24,19 @@
       },
       "launch_block_device_mappings": [
         {
-          "device_name": "/dev/sda",
+          "device_name": "/dev/sda1",
           "volume_size": 100,
           "volume_type": "gp2",
           "delete_on_termination": true
         },
         {
-          "device_name": "/dev/sdb",
+          "device_name": "xvdb",
           "volume_size": 50,
           "volume_type": "gp2",
           "delete_on_termination": true
         },
         {
-          "device_name": "/dev/sdc",
+          "device_name": "xvdc",
           "volume_size": 350,
           "volume_type": "gp2",
           "delete_on_termination": true
