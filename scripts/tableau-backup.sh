@@ -21,7 +21,7 @@ export NEWEST_BACKUP_FOR_S3=`find /var/opt/tableau/tableau_server/data/tabsvc/fi
 
 # Upload backup to S3
 echo "== Uploading backup to S3"
-if aws s3 cp $NEWEST_BACKUP_FOR_S3 $DATA_ARCHIVE_TAB_INT_BACKUP_URL; then
+if aws s3 cp $NEWEST_BACKUP_FOR_S3 $DATA_ARCHIVE_TAB_INT_BACKUP_URL --no-progress; then
   echo "== Upload successful"
   # If successful: cleanup - delete local backups older than 24 hours (ish)
   echo "== Removing old backup files"
