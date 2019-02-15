@@ -22,20 +22,14 @@
       mode: 0700
       owner: tableau_srv
 
-  - name: Create scripts directory for tableau_srv user
-    file:
-      path: /home/tableau_srv/scripts
-      state: directory
-      mode: 0755
-      owner: tableau_srv
 
-  - name: Copy Tableau to S3 backup script
+  - name: Create scripts directory for tableau_srv user c/w all files
     copy:
-      src: scripts/tableau-backup.sh
-      dest: /home/tableau_srv/scripts/tableau-backup.sh
+      src: tableau-scripts/
+      dest: /home/tableau_srv/scripts
       owner: tableau_srv
       group: tableau_srv
-      mode: 0774
+      mode: 0544
 
   - name: Ensure Tableau backup to S3 log file for tableau_srv user exists
     copy:
