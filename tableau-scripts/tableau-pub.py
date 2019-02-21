@@ -1,3 +1,5 @@
+#!/bin/python
+
 # This script publishes the required tableau artefacts
 
 # First it reads a flag to decide what needs to be published, either:
