@@ -6,6 +6,7 @@
 # 1. Nothing
 # 2. Everything from a specific site
 # 3. Specific elements (in comma separated list)
+# 4. Everything from a specific site EXCEPT for specific elements (in comma separated list)
 
 # All artefacts are found in Git
 # Assume Git structure:
@@ -132,12 +133,14 @@ def read_workbooks_specific(repo_name, wb_list_string):
 
 
 # Define a function to publish all of the artefacts read previously
-def publish_datasources(repo_name, ds_list_to_pub):
+def publish_datasources(repo_name, ds_list_to_pub, ds_excl_list = []):
     for ds_to_pub in ds_list_to_pub:
+        if ds_to_pub in ds_excl_list:
+            if verbose >= 1:
+                print "NOT publishing <", ds_to_pub, "> - it is in the exclusion list"
+                continue
         if verbose >= 2:
-            print "ds_to_pub = <"
-            print ds_to_pub
-            print ">"
+            print "ds_to_pub = <", ds_to_pub, ">"
         project = ds_to_pub[1]
         ds_file = os.path.join(repo_name, 'datasources', project, ds_to_pub[2])
         if verbose >= 2:
@@ -148,8 +151,12 @@ def publish_datasources(repo_name, ds_list_to_pub):
             sys.exit(return_code)
 
 # Define a function to publish all of the artefacts read previously
-def publish_workbooks(repo_name, wb_list_to_pub):
+def publish_workbooks(repo_name, wb_list_to_pub, wb_excl_list = []):
     for wb_to_pub in wb_list_to_pub:
+        if wb_to_pub in wb_excl_list:
+            if verbose >= 1:
+                print "NOT publishing <", wb_to_pub, "> - it is in the exclusion list"
+                continue
         if verbose >= 2:
             print "wb_to_pub = <"
             print wb_to_pub
@@ -192,15 +199,40 @@ else:
 ds_to_pub = os.environ["DATASOURCES_TO_PUBLISH"]
 wb_to_pub = os.environ["WORKBOOKS_TO_PUBLISH"]
 
-if ds_to_pub == '':
-    import sys
-    sys.exit(0)
+ds_list = []
+ds_not_list = []
+
+if ds_to_pub == '' or ds_to_pub.upper() == 'NONE':
+    pass
 elif ds_to_pub.upper() == 'ALL':
     ds_list = read_datasources_all(repo)
-    wb_list = read_workbooks_all(repo)
+elif ds_to_pub.split(None, 1)[0].upper() == 'NOT':
+    not_operator, not_operand = ds_to_pub.split(None, 1)
+    ds_not_list = read_datasources_specific(repo, not_operand)
+    ds_list = read_datasources_all(repo)
 else:
     ds_list = read_datasources_specific(repo, ds_to_pub)
+
+wb_list = []
+wb_not_list = []
+
+if wb_to_pub == '' or wb_to_pub.upper() == 'NONE':
+    pass
+elif wb_to_pub.upper() == 'ALL':
+    wb_list = read_workbooks_all(repo)
+elif wb_to_pub.split(None, 1)[0].upper() == 'NOT':
+    not_operator, not_operand = wb_to_pub.split(None, 1)
+    wb_not_list = read_workbooks_specific(repo, not_operand)
+    wb_list = read_workbooks_all(repo)
+else:
     wb_list = read_workbooks_specific(repo, wb_to_pub)
+
+if len(ds_list) == 0 and len(wb_list) == 0:
+    if verbose >= 1:
+        print "Nothing to publish."
+        print "Exiting"
+        import sys
+        sys.exit(0)
 
 # Log in to Tableau Server (with helper script)
 return_code = subprocess.call([os.path.join(home_dir, "scripts", "tableau-login.sh"), site])
@@ -210,8 +242,8 @@ if return_code != 0:
 
 # Call function to publish each DataSource
 if len(ds_list) > 0:
-    publish_datasources(repo, ds_list)
+    publish_datasources(repo, ds_list, ds_not_list)
 
 # Call function to publish each WorkBook
 if len(wb_list) > 0:
-    publish_workbooks(repo, wb_list)
+    publish_workbooks(repo, wb_list, wb_not_list)
