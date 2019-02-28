@@ -231,7 +231,6 @@ if len(ds_list) == 0 and len(wb_list) == 0:
     if verbose >= 1:
         print "Nothing to publish."
         print "Exiting"
-        import sys
         sys.exit(0)
 
 # Log in to Tableau Server (with helper script)
