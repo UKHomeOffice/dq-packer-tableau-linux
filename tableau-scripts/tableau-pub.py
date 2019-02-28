@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python
 
 # This script publishes the required tableau artefacts
 
