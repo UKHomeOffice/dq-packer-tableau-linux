@@ -74,15 +74,16 @@
      remote_src: yes
     become: true
 
-  - name: Configure Python 3.7
+  - name: Configure, build, test and install Python 3.7
     shell: |
       cd /usr/src/Python-3.7.2
       ./configure --enable-optimizations
       make
+      make test
       make install
     become: true
 
-  - name: Pip Install Dependencies
+  - name: Pip Install required modules
     pip: 'name={{ item }}'
     executable: pip3
     with_items:
