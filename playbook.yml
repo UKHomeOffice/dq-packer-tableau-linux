@@ -85,7 +85,7 @@
 
   - name: Pip Install required modules
     pip: 'name={{ item }}'
-    executable: pip3
+    executable: /usr/local/bin/pip3
     with_items:
       - AWSCLI
       - lxml
