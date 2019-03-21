@@ -81,7 +81,8 @@
     become: true
 
   - name: Pip Install Dependencies
-    pip3: 'name={{ item }}'
+    pip: 'name={{ item }}'
+    executable: pip3.7
     with_items:
       - AWSCLI
     become: true
