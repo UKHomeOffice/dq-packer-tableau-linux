@@ -80,12 +80,12 @@
       creates: /usr/src/Python-3.7.2/Modules
     become: true
 
-  - name: Pip Install Dependencies
-    pip: 'name={{ item }}'
-    executable: pip3.7
-    with_items:
-      - AWSCLI
-    become: true
+  # - name: Pip Install Dependencies
+  #   pip: 'name={{ item }}'
+  #   executable: pip3.7
+  #   with_items:
+  #     - AWSCLI
+  #   become: true
 
   - name: GET Tableau files from DQ-config-bucket
     shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
