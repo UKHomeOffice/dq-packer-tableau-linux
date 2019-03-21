@@ -62,7 +62,6 @@
   - name: Yum Install Dependencies
     yum: name={{ item }}
     with_items:
-      - python3-pip
       - git
       - cloud-utils
     become: true
