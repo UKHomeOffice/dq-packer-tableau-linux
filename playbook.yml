@@ -64,6 +64,7 @@
     with_items:
       - git
       - cloud-utils
+      - libffi-devel
     become: true
 
   - name: Install Python 3.7
@@ -74,18 +75,20 @@
     become: true
 
   - name: Configure Python 3.7
-    shell: ./configure --enable-optimizations
-    args:
-      chdir: /usr/src/Python-3.7.2
-      creates: /usr/src/Python-3.7.2/Modules
+    shell: |
+      cd /usr/src/Python-3.7.2
+      ./configure --enable-optimizations
+      make
+      make install
     become: true
 
-  # - name: Pip Install Dependencies
-  #   pip: 'name={{ item }}'
-  #   executable: pip3.7
-  #   with_items:
-  #     - AWSCLI
-  #   become: true
+  - name: Pip Install Dependencies
+    pip: 'name={{ item }}'
+    executable: pip3
+    with_items:
+      - AWSCLI
+      - lxml
+    become: true
 
   - name: GET Tableau files from DQ-config-bucket
     shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
