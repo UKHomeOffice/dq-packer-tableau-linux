@@ -83,12 +83,10 @@
       make install
     become: true
 
-  - name: Pip Install required modules
-    pip: 'name={{ item }}'
-    executable: /usr/local/bin/pip3
-    with_items:
-      - AWSCLI
-      - lxml
+  - name: Pip Install modules for python3 - use shell because ansible pip is pip2
+    shell: |
+      /usr/local/bin/pip3 install AWSCLI
+      /usr/local/bin/pip3 install lxml
     become: true
 
   - name: GET Tableau files from DQ-config-bucket
