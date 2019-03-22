@@ -78,46 +78,46 @@
     shell: |
       cd /usr/src/Python-3.7.2
       ./configure --enable-optimizations
-      make
-      make test
-      make install
+      # make
+      # make test
+      # make install
     become: true
 
-  - name: Pip Install required modules
-    pip: 'name={{ item }}'
-    executable: /usr/local/bin/pip3
-    with_items:
-      - AWSCLI
-      - lxml
-    become: true
-
-  - name: GET Tableau files from DQ-config-bucket
-    shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
-
-  - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
-    yum:
-      name:
-        - /tmp/install/tableau-postgresql-odbc-gold-master.x86_64.rpm
-        - /tmp/install/tableau-server-gold-master.x86_64.rpm
-        - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
-        - zip
-        - unzip
-
-  - name: Download cloudwatch logs agent
-    get_url:
-      url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
-      dest: /tmp/awslogs-agent-setup.py
-      mode: "+x"
-
-  - name: GET Cloudwatch logs config from DQ-config-bucket
-    shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
-
-  - name: Install cloudwatch log agent
-    environment:
-      LC_ALL: C
-    shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf
-    args:
-      creates: /var/awslogs/etc/aws.conf
+  # - name: Pip Install required modules
+  #   pip: 'name={{ item }}'
+  #   executable: /usr/local/bin/pip3
+  #   with_items:
+  #     - AWSCLI
+  #     - lxml
+  #   become: true
+  #
+  # - name: GET Tableau files from DQ-config-bucket
+  #   shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+  #
+  # - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
+  #   yum:
+  #     name:
+  #       - /tmp/install/tableau-postgresql-odbc-gold-master.x86_64.rpm
+  #       - /tmp/install/tableau-server-gold-master.x86_64.rpm
+  #       - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
+  #       - zip
+  #       - unzip
+  #
+  # - name: Download cloudwatch logs agent
+  #   get_url:
+  #     url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
+  #     dest: /tmp/awslogs-agent-setup.py
+  #     mode: "+x"
+  #
+  # - name: GET Cloudwatch logs config from DQ-config-bucket
+  #   shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
+  #
+  # - name: Install cloudwatch log agent
+  #   environment:
+  #     LC_ALL: C
+  #   shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf
+  #   args:
+  #     creates: /var/awslogs/etc/aws.conf
 
   - name: Copy cloudwatch logs starter
     copy:
