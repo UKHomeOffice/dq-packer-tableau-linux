@@ -62,12 +62,19 @@
   - name: Yum Install Dependencies
     yum: name={{ item }}
     with_items:
+      - python-pip
       - git
       - cloud-utils
       - libffi-devel
     become: true
 
-  - name: Install Python 3.7
+  - name: Pip Install modules for python2 - for ansible to use later
+    pip: 'name={{ item }}'
+    with_items:
+      - AWSCLI
+    become: true
+
+  - name: Download Python 3.7
     unarchive:
      src: https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz
      dest: /usr/src
@@ -84,9 +91,7 @@
     become: true
 
   - name: Pip Install modules for python3 - use shell because ansible pip is pip2
-    shell: |
-      /usr/local/bin/pip3 install AWSCLI
-      /usr/local/bin/pip3 install lxml
+    shell: /usr/local/bin/pip3 install lxml
     become: true
 
   - name: GET Tableau files from DQ-config-bucket
