@@ -17,7 +17,7 @@ pipeline:
     commands:
       - export HOME=/home/packer
       - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
-      - packer build packer.json -on-error=abort
+      - packer build -on-error=abort packer.json
     secrets:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
