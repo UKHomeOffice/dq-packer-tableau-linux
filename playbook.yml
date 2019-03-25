@@ -94,11 +94,16 @@
   #   shell: /usr/local/bin/pip3 install lxml
   #   become: true
 
-  - name: Pip Install modules for python3
-    pip: 'name={{ item }}'
-    with_items:
-      - AWSCLI
-      - lxml
+  - name: Pip Install modules for python3 - AWSCLI
+    pip:
+      name: AWSCLI
+    executable: /usr/local/bin/pip3
+    become: true
+
+    # Separate section because `with_items` does not appear to work with Pip3
+  - name: Pip Install modules for python3 - lxml
+    pip:
+      name: lxml
     executable: /usr/local/bin/pip3
     become: true
 
