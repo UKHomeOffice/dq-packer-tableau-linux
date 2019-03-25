@@ -115,7 +115,7 @@
     become: true
 
   - name: GET Tableau files from DQ-config-bucket
-    shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+    shell: /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
 
   - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
     yum:
