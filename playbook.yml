@@ -90,8 +90,14 @@
       make install
     become: true
 
-  - name: Pip Install modules for python3 - use shell because ansible pip is pip2
-    shell: /usr/local/bin/pip3 install lxml
+  # - name: Pip Install modules for python3 - use shell because ansible pip is pip2
+  #   shell: /usr/local/bin/pip3 install lxml
+  #   become: true
+
+  - name: Pip Install modules for python3
+    pip:
+      name: lxml
+      executable: pip-3.78
     become: true
 
   - name: GET Tableau files from DQ-config-bucket
