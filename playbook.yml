@@ -97,14 +97,14 @@
   - name: Pip Install modules for python3 - AWSCLI
     pip:
       name: AWSCLI
-    executable: /usr/local/bin/pip3
+      executable: /usr/local/bin/pip3
     become: true
 
     # Separate section because `with_items` does not appear to work with Pip3
   - name: Pip Install modules for python3 - lxml
     pip:
       name: lxml
-    executable: /usr/local/bin/pip3
+      executable: /usr/local/bin/pip3
     become: true
 
   - name: GET Tableau files from DQ-config-bucket
