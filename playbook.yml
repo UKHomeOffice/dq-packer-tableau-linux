@@ -81,10 +81,11 @@
      remote_src: yes
     become: true
 
+  # ./configure --enable-optimizations
   - name: Configure, build, test and install Python 3.7
     shell: |
       cd /usr/src/Python-3.7.2
-      ./configure --enable-optimizations
+      ./configure
       make
       make test
       make install
@@ -97,7 +98,7 @@
   - name: Pip Install modules for python3
     pip:
       name: lxml
-      executable: pip-3.78
+      executable: pip-3.7
     become: true
 
   - name: GET Tableau files from DQ-config-bucket
