@@ -67,12 +67,6 @@
       - libffi-devel
     become: true
 
-  # - name: Pip Install modules for python2 - for ansible to use later
-  #   pip: 'name={{ item }}'
-  #   with_items:
-  #     - AWSCLI
-  #   become: true
-
   - name: Download Python 3.7
     unarchive:
      src: https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz
@@ -80,19 +74,14 @@
      remote_src: yes
     become: true
 
-  # ./configure --enable-optimizations
   - name: Configure, build, test and install Python 3.7
     shell: |
       cd /usr/src/Python-3.7.2
-      ./configure
+      ./configure --enable-optimizations
       make
       make test
       make install
     become: true
-
-  # - name: Pip Install modules for python3 - use shell because ansible pip is pip2
-  #   shell: /usr/local/bin/pip3 install lxml
-  #   become: true
 
   - name: Upgrade to latest Pip3
     pip:
@@ -101,16 +90,9 @@
       executable: /usr/local/bin/pip3
     become: true
 
-  - name: Pip Install modules for python3 - AWSCLI
+  - name: Pip Install modules for python3
     pip:
-      name: AWSCLI
-      executable: /usr/local/bin/pip3
-    become: true
-
-    # Separate section because `with_items` does not appear to work with Pip3
-  - name: Pip Install modules for python3 - lxml
-    pip:
-      name: lxml
+      name: AWSCLI,lxml
       executable: /usr/local/bin/pip3
     become: true
 
@@ -133,7 +115,7 @@
       mode: "+x"
 
   - name: GET Cloudwatch logs config from DQ-config-bucket
-    shell: aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
+    shell: /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
 
   - name: Install cloudwatch log agent
     environment:
