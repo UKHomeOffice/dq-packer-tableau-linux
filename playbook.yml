@@ -98,7 +98,7 @@
   - name: Pip Install modules for python3
     pip:
       name: lxml
-      executable: pip-3.7
+      executable: pip3.7
     become: true
 
   - name: GET Tableau files from DQ-config-bucket
