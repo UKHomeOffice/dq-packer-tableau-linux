@@ -1,41 +1,25 @@
 #!/usr/bin/env python3
 
-# repoints server connections in the folder 'path'
-# from 'old_dbname' to 'new_dbname'
+# repoints server connections in the folder 'path' (arg1)
+# to 'NEW_DBNAME'
 # processes twb, twbx, tds, tdsx files
 # new files end up in a subfolder 'repointed' of 'path'
 
 import os
-import re
 import sys
 import zipfile
+# import lxml
+from lxml import etree
 
 
 # change the below to reflect the required path and server names
 VERBOSE = 1
 OUTPUT_UNCOMPRESSED_FILES = True
-# OLD_DBNAME="postgres-internal-tableau-apps-notprod-dq.cjwr8jp0ndrs.eu-west-2.rds.amazonaws.com"
-# OLD_DBNAME = "postgres-internal-tableau-apps-notprod-dq.\S*?.eu-west-2.rds.amazonaws.com"
-# Matches:  [dev-|qa-|uat-]?                : any one of these prefixes
-#           postgres-                       : literal string
-#           [internal|external]?            : internal or external
-#           -tableau-apps-                  : literal string
-#           [not]?prod                      : notprod or prod
-#           -dq.                            : literal string
-#           \S*?                            : any number of character (not greedy),  e.g. cjwr8jp0ndrs
-#           .eu-west-2.rds.amazonaws.com    : literal string
-#
-# old_dbname = "[dev-|qa-|uat-]?postgres-[internal|external]-tableau-apps-[not]?prod-dq.\S*?.eu-west-2.rds.amazonaws.com"
-# old_dbname = "[dev-|qa-|uat-]{0,1}postgres-[internal|external]+-tableau-apps-notprod-dq.\S*?.eu-west-2.rds.amazonaws.com"
-old_dbname = "dev-postgres-[internal|external]+-tableau-apps-notprod-dq.\S*?.eu-west-2.rds.amazonaws.com"
-# new_dbname = "postgres-internal-tableau-apps-notprod-dq.cool-random-string.eu-west-2.rds.amazonaws.com"
 
 
 def usage():
     """
     # Usage - supply source directory and new DB name
-    # TODO: Need to work out a way of handling NotProd/Prod
-    # TODO: Need to work out a way of handling old DB name
     """
     print("Usage:", sys.argv[0], "[SOURCE DIR] [NEW DB NAME]")
     print("    where:")
@@ -60,66 +44,77 @@ def create_subdirectory(path, new_dir_name):
     return new_full_path
 
 
-def server_rename(buffer, olddbname, newdbname):
+def server_rename_doc_tree(tab_doc_tree, new_dbname):
     """
-    # Function to rename the (database) server within a (tableau) file
+    Function to find server connections and replace the DB name
+      - takes an lxml document tree
+      - returns an lxml document tree
     """
-    tab_text = buffer.decode('utf-8')
+    doc_tree = tab_doc_tree
+    root = doc_tree.getroot()
+    conn_elem = root.find('connection/named-connections/named-connection/connection')
+    if conn_elem is not None:
+        print("connection element =", etree.tostring(conn_elem))
+        if conn_elem.attrib['server'] != new_dbname:
+            conn_elem.attrib['server'] = new_dbname
+        print("connection element =", etree.tostring(conn_elem))
+    else:
+        print("No connections found in this file")
 
-    # # replaces every instance of the olddbname with the newdbname
-    (tab_text, num_subs_1) = re.subn("http://" + old_dbname, "http://" + new_dbname, tab_text)
-    (tab_text, num_subs_2) = re.subn("server=\'" + old_dbname, "server=\'" + new_dbname, tab_text)
-    (tab_text, num_subs_3) = re.subn("server=\'" + old_dbname.upper(),
-                                  "server=\'" + new_dbname.upper(), tab_text)
-    (tab_text, num_subs_4) = re.subn("server=&apos;" + old_dbname,
-                                  "server=&apos;" + new_dbname, tab_text)
-
-    # Report how many changes were made
-    if VERBOSE >= 1:
-        if tab_text == buffer:
-            print("> No changes were made")
-        else:
-            print("> Made", num_subs_1 + num_subs_2 + num_subs_3 + num_subs_4, "changes to DB server name")
-            # print("> Made", 0, "changes to DB server name")
-
-    return bytes(tab_text, 'utf-8')
+    return doc_tree
 
 
-def rewritezip(path, filename):
+def server_rename_doc(tab_doc, new_dbname):
     """
-    # Function to open and re-write the zipfile
-    # Optionally, the Tableau DataSource and Workbook files can be written (outside of the compressed file)
+    Function to find server connections and replace the DB name
+      - takes an lxml document
+      - returns an lxml document
+    """
+    root = tab_doc
+    conn_elem = root.find('connection/named-connections/named-connection/connection')
+    print("connection element =", etree.tostring(conn_elem))
+    if conn_elem.attrib['server'] != new_dbname:
+        conn_elem.attrib['server'] = new_dbname
+    print("connection element =", etree.tostring(conn_elem))
+
+    return root
+
+
+def rewritezip(from_path, to_path, zip_filename):
+    """
+    Function to open and re-write the zipfile
     """
     if VERBOSE >= 2:
-        print(">> Opening compressed tableau file", filename)
-    zread = zipfile.ZipFile(os.path.join(path, filename), 'r')
-    zwrite = zipfile.ZipFile(os.path.join(repointed_dir, filename), 'w')
+        print(">> Opening compressed tableau file", zip_filename)
+    zread = zipfile.ZipFile(os.path.join(from_path, zip_filename), 'r')
+    zwrite = zipfile.ZipFile(os.path.join(to_path, zip_filename), 'w')
 
     # loop through files in zip archive
     for item in zread.infolist():
-        tab_in = zread.read(item.filename)
+        stream_in = zread.read(item.filename)
         # if tableau file, repoint it, else re-write it unchanged
         if item.filename[-4:] == '.twb' or item.filename[-4:] == '.tds':
-            if OUTPUT_UNCOMPRESSED_FILES:
-                # write a copy of the original tableau file, outside of `.t**x`
-                if VERBOSE >= 2:
-                    print(">> Writing a copy of the original file", item.filename, "to", uncompressed_dir)
-                original_file = open(os.path.join(uncompressed_dir, item.filename), "wb")
-                original_file.write(tab_in)
-                original_file.close()
             if VERBOSE >= 1:
                 print("> Processing", item.filename)
-            repointed = server_rename(tab_in, old_dbname, new_dbname)
-            zwrite.writestr(item.filename, repointed)
-            if OUTPUT_UNCOMPRESSED_FILES:
-                # write a copy of the repointed file, outside of `.t**x`
-                if VERBOSE >= 2:
-                    print(">> Writing a copy of the repointed file", item.filename, "to", uncompressed_repointed_dir)
-                repointed_file = open(os.path.join(uncompressed_repointed_dir, item.filename), "wb")
-                repointed_file.write(repointed)
-                repointed_file.close()
+            TEMP_DIR = create_subdirectory(to_path, 'temp')
+            original_full_file = os.path.join(TEMP_DIR, item.filename)
+            original_file = open(original_full_file, "wb")
+            original_file.write(stream_in)
+            original_file.close()
+            xml_doc_tree_original = etree.parse(original_full_file)
+            xml_doc_tree_repointed = server_rename_doc_tree(xml_doc_tree_original,
+                                                            NEW_DBNAME)
+            # xml_doc_tree_original = etree.parse(item.filename)
+            # xml_doc_tree_repointed = server_rename_doc_tree(xml_doc_tree_original,
+            #                                                 NEW_DBNAME)
+            # zwrite.writestr(item.filename, xml_doc_tree_repointed.write())
+            # xml_doc_original = etree.fromstring(stream_in.decode())
+            # print("Now it is:", etree.tostring(xml_doc_original))
+            # xml_doc_repointed = server_rename_doc(xml_doc_original,
+            #                                       NEW_DBNAME)
+            zwrite.writestr(item.filename, etree.tostring(xml_doc_tree_repointed))
         else:
-            zwrite.writestr(item, tab_in)
+            zwrite.writestr(item, stream_in)
     zread.close()
     zwrite.close()
 
@@ -127,42 +122,38 @@ def rewritezip(path, filename):
 #########
 # START #
 #########
-# Usage
-if len(sys.argv) == 3:
-    tab_files_path = sys.argv[1]
-    if not os.path.isdir(tab_files_path):
-        print("Cannot find source directory (" + tab_files_path + ")")
-        print("Please provide full path to source directory containing Tableau files to be repointed.")
+if __name__ == '__main__':
+    # Usage
+    if len(sys.argv) == 3:
+        TAB_FILES_PATH = sys.argv[1]
+        if not os.path.isdir(TAB_FILES_PATH):
+            print("Cannot find source directory (" + TAB_FILES_PATH + ")")
+            print("Please provide full path to source directory containing",
+                  "Tableau files to be repointed.")
+            usage()
+        NEW_DBNAME = sys.argv[2]
+    else:
         usage()
-    new_dbname = sys.argv[2]
-else:
-    usage()
 
-print("Starting...")
-# create new subdirectory for extracted tableau files
-uncompressed_dir = create_subdirectory(tab_files_path, 'uncompressed')
+    print("Starting...")
 
-# create new subdirectory for repointed tableau files
-repointed_dir = create_subdirectory(tab_files_path, 'repointed')
+    # create new subdirectory for repointed tableau files
+    REPOINTED_DIR = create_subdirectory(TAB_FILES_PATH, 'repointed')
 
-# create new subdirectory for extracted repointed tableau files
-uncompressed_repointed_dir = create_subdirectory(repointed_dir, 'uncompressed')
+    # loop through files. if .t**x file, unzip first, else just replace strings
+    for filename in os.listdir(TAB_FILES_PATH):
+        if VERBOSE >= 1:
+            print("> Processing", filename)
+        if filename[-5:] == '.twbx' or filename[-5:] == '.tdsx':
+            rewritezip(TAB_FILES_PATH, REPOINTED_DIR, filename)
+        elif filename[-4:] == '.twb' or filename[-4:] == '.tds':
+            full_file = os.path.join(TAB_FILES_PATH, filename)
+            xml_doc_tree_old = etree.parse(full_file)
+            xml_doc_tree_new = server_rename_doc_tree(xml_doc_tree_old,
+                                                      NEW_DBNAME)
 
+            tab_out = open(os.path.join(REPOINTED_DIR, filename), 'wb')
+            xml_doc_tree_new.write(tab_out)
+            tab_out.close()
 
-# loop through files. if .t**x file, unzip first, else just replace strings
-for filename in os.listdir(tab_files_path):
-    if VERBOSE >= 1:
-        print("> Processing", filename)
-    if filename[-5:] == '.twbx' or filename[-5:] == '.tdsx':
-        rewritezip(tab_files_path, filename)
-    elif filename[-4:] == '.twb' or filename[-4:] == '.tds':
-        full_file = os.path.join(tab_files_path, filename)
-        tab_file = open(full_file, 'rb')
-        tab_in = tab_file.read()
-        repointed = server_rename(tab_in, old_dbname, new_dbname)
-        tab_out = open(os.path.join(repointed_dir, filename), 'wb')
-        tab_out.write(repointed)
-        tab_out.close()
-        tab_file.close()
-
-print("Finished.")
+    print("Finished.")
