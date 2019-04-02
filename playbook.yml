@@ -48,20 +48,16 @@
       hour: 19
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
-  - name: Yum Install Pre Dependencies
+  - name: Yum Install Dependencies
     yum: name={{ item }}
     with_items:
+      - update -y
       - epel-release
       - gcc
       - pcre-devel
       - openssl-devel
       - zlib-devel
       - wget
-    become: true
-
-  - name: Yum Install Dependencies
-    yum: name={{ item }}
-    with_items:
       - git
       - cloud-utils
       - libffi-devel
