@@ -51,7 +51,6 @@
   - name: Yum Install Dependencies
     yum: name={{ item }}
     with_items:
-      - update -y
       - epel-release
       - gcc
       - pcre-devel
@@ -61,6 +60,10 @@
       - git
       - cloud-utils
       - libffi-devel
+    become: true
+
+  - name: Yum Update
+    shell: yum update -y
     become: true
 
   - name: Download Python 3.7
