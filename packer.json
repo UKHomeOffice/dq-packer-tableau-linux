@@ -43,7 +43,7 @@
         }
       ],
       "ssh_username": "centos",
-      "instance_type": "m4.4xlarge",
+      "instance_type": "r5d.4xlarge",
       "ami_name": "dq-tableau-linux-{{user `drone_build_number`}}",
       "ami_users": [
         "483846886818",
