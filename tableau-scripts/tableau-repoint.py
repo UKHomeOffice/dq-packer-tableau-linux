@@ -101,14 +101,6 @@ def rewritezip(from_path, to_path, zip_filename, new_dbname):
             xml_doc_tree_original = etree.parse(original_full_file)
             xml_doc_tree_repointed = server_rename_doc_tree(xml_doc_tree_original,
                                                             new_dbname)
-            # xml_doc_tree_original = etree.parse(item.filename)
-            # xml_doc_tree_repointed = server_rename_doc_tree(xml_doc_tree_original,
-            #                                                 NEW_DBNAME)
-            # zwrite.writestr(item.filename, xml_doc_tree_repointed.write())
-            # xml_doc_original = etree.fromstring(stream_in.decode())
-            # print("Now it is:", etree.tostring(xml_doc_original))
-            # xml_doc_repointed = server_rename_doc(xml_doc_original,
-            #                                       NEW_DBNAME)
             zwrite.writestr(item.filename, etree.tostring(xml_doc_tree_repointed))
         else:
             zwrite.writestr(item, stream_in)
