@@ -5,16 +5,12 @@
 # processes twb, twbx, tds, tdsx files
 # new files end up in a subfolder 'repointed' of 'path'
 
+import argparse
+import logging
 import os
 import sys
 import zipfile
-# import lxml
 from lxml import etree
-
-
-# change the below to reflect the required path and server names
-VERBOSE = 1
-OUTPUT_UNCOMPRESSED_FILES = True
 
 
 def usage():
@@ -23,10 +19,14 @@ def usage():
     """
     print("Usage:", sys.argv[0], "[SOURCE DIR] [NEW DB NAME]")
     print("    where:")
-    print("        [SOURCE DIR]  - Directory containing Tableau files to be repointed")
-    print("                      - e.g. $HOME/tableau-internal/DQDashboards/datasources/Admin")
-    print("        [NEW DB NAME] - Name of database to be used in this environment")
-    print("                      - e.g. postgres-internal-tableau-apps-notprod-dq.cool-random-string.eu-west-2.rds.amazonaws.com")
+    print("        [SOURCE DIR]  - Directory containing Tableau files to be"
+          + "repointed")
+    print("                      - e.g. $HOME/tableau-internal/DQDashboards/"
+          + "datasources/Admin")
+    print("        [NEW DB NAME] - Name of database to be used in this "
+          + "environment")
+    print("                      - e.g. postgres-internal-tableau-apps-notprod"
+          + "-dq.cool-random-string.eu-west-2.rds.amazonaws.com")
     sys.exit(1)
 
 
@@ -38,8 +38,7 @@ def create_subdirectory(path, new_dir_name):
     """
     new_full_path = os.path.join(path, new_dir_name)
     if not os.path.exists(new_full_path):
-        if VERBOSE >= 2:
-            print(">> Creating", new_dir_name, "subdirectory")
+        logging.debug(">> Creating " + new_dir_name + " subdirectory")
         os.makedirs(new_full_path)
     return new_full_path
 
@@ -59,7 +58,7 @@ def server_rename_doc_tree(tab_doc_tree, new_dbname):
             conn_elem.attrib['server'] = new_dbname
         print("connection element =", etree.tostring(conn_elem))
     else:
-        print("No connections found in this file")
+        logging.info("No connections found in this file")
 
     return doc_tree
 
@@ -80,12 +79,11 @@ def server_rename_doc(tab_doc, new_dbname):
     return root
 
 
-def rewritezip(from_path, to_path, zip_filename):
+def rewritezip(from_path, to_path, zip_filename, new_dbname):
     """
     Function to open and re-write the zipfile
     """
-    if VERBOSE >= 2:
-        print(">> Opening compressed tableau file", zip_filename)
+    logging.debug(">> Opening compressed tableau file " + zip_filename)
     zread = zipfile.ZipFile(os.path.join(from_path, zip_filename), 'r')
     zwrite = zipfile.ZipFile(os.path.join(to_path, zip_filename), 'w')
 
@@ -94,8 +92,7 @@ def rewritezip(from_path, to_path, zip_filename):
         stream_in = zread.read(item.filename)
         # if tableau file, repoint it, else re-write it unchanged
         if item.filename[-4:] == '.twb' or item.filename[-4:] == '.tds':
-            if VERBOSE >= 1:
-                print("> Processing", item.filename)
+            logging.info("> Processing " + item.filename)
             TEMP_DIR = create_subdirectory(to_path, 'temp')
             original_full_file = os.path.join(TEMP_DIR, item.filename)
             original_file = open(original_full_file, "wb")
@@ -103,7 +100,7 @@ def rewritezip(from_path, to_path, zip_filename):
             original_file.close()
             xml_doc_tree_original = etree.parse(original_full_file)
             xml_doc_tree_repointed = server_rename_doc_tree(xml_doc_tree_original,
-                                                            NEW_DBNAME)
+                                                            new_dbname)
             # xml_doc_tree_original = etree.parse(item.filename)
             # xml_doc_tree_repointed = server_rename_doc_tree(xml_doc_tree_original,
             #                                                 NEW_DBNAME)
@@ -119,33 +116,44 @@ def rewritezip(from_path, to_path, zip_filename):
     zwrite.close()
 
 
-#########
-# START #
-#########
-if __name__ == '__main__':
-    # Usage
-    if len(sys.argv) == 3:
-        TAB_FILES_PATH = sys.argv[1]
-        if not os.path.isdir(TAB_FILES_PATH):
-            print("Cannot find source directory (" + TAB_FILES_PATH + ")")
-            print("Please provide full path to source directory containing",
-                  "Tableau files to be repointed.")
-            usage()
-        NEW_DBNAME = sys.argv[2]
-    else:
-        usage()
+def main():
+    parser = argparse.ArgumentParser(description='repoints server connections')
+    parser.add_argument('--path', '-p', required=True,
+                        help='Path to Tableau resourses to be repointed')
+    parser.add_argument('--database', '-d', required=True,
+                        help='Name of database to be used in this environment')
+    parser.add_argument('--output_uncompressed_files', '-o', default=True,
+                        help='Script to output uncompressed Tableau files')
 
-    print("Starting...")
+    parser.add_argument('--logging-level', '-l',
+                        choices=['debug', 'info', 'error'], default='error',
+                        help='desired logging level (set to error by default)')
+
+    args = parser.parse_args()
+
+    TAB_FILES_PATH = args.path
+    if not os.path.isdir(TAB_FILES_PATH):
+        print("Cannot find source directory (" + TAB_FILES_PATH + ")")
+        print("Please provide full path to source directory containing",
+              "Tableau files to be repointed.")
+        usage()
+    NEW_DBNAME = args.database
+    OUTPUT_UNCOMPRESSED_FILES = args.output_uncompressed_files
+
+    # Set logging level based on user input, or error by default
+    logging_level = getattr(logging, args.logging_level.upper())
+    logging.basicConfig(level=logging_level)
+
+    logging.debug("Starting...")
 
     # create new subdirectory for repointed tableau files
     REPOINTED_DIR = create_subdirectory(TAB_FILES_PATH, 'repointed')
 
     # loop through files. if .t**x file, unzip first, else just replace strings
     for filename in os.listdir(TAB_FILES_PATH):
-        if VERBOSE >= 1:
-            print("> Processing", filename)
+        logging.info("> Processing " + filename)
         if filename[-5:] == '.twbx' or filename[-5:] == '.tdsx':
-            rewritezip(TAB_FILES_PATH, REPOINTED_DIR, filename)
+            rewritezip(TAB_FILES_PATH, REPOINTED_DIR, filename, NEW_DBNAME)
         elif filename[-4:] == '.twb' or filename[-4:] == '.tds':
             full_file = os.path.join(TAB_FILES_PATH, filename)
             xml_doc_tree_old = etree.parse(full_file)
@@ -156,4 +164,8 @@ if __name__ == '__main__':
             xml_doc_tree_new.write(tab_out)
             tab_out.close()
 
-    print("Finished.")
+    logging.debug("Finished.")
+
+
+if __name__ == '__main__':
+    main()
