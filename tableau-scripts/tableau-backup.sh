@@ -8,6 +8,9 @@ date
 echo "==========================="
 echo "== Log file: /var/log/last-tab-backup-to-s3.log"
 
+# Add /usr/local/bin to path
+PATH=/usr/local/bin:$PATH
+
 # Login to TSM
 echo "== Authenticating with TSM"
 tsm login -u $TAB_SRV_USER -p $TAB_SRV_PASSWORD
@@ -16,12 +19,28 @@ tsm login -u $TAB_SRV_USER -p $TAB_SRV_PASSWORD
 echo "== Generating Tableau Server backup"
 tsm maintenance backup --file ts_backup --append-date
 
+# Lookup Green/Blue from S3
+export IP=$(aws s3 cp s3://$S3_HAPROXY_CONFIG_BUCKET/haproxy.cfg - | grep "server tableau_int" | awk '{ print $3 }' | awk -F : '{ print $1 }')
+export CURRENT_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+DATE=$(date +%Y-%m-%d-%H:%M:%S)
+
+if [ IP == CURRENT_IP ]; then
+  echo "== Set destination as Green instance"
+  export BACKUP_LOCATION="$DATA_ARCHIVE_TAB_BACKUP_URL"green/$DATE/
+elif [ IP != CURRENT_IP ]; then
+  echo "== Set destination as Blue instance"
+  export BACKUP_LOCATION="$DATA_ARCHIVE_TAB_BACKUP_URL"blue/$DATE/
+else
+  echo "== FAILED: Failed to set Green/Blue instace..."
+  exit
+fi
+
 # Export env_var for newly created backup
 export NEWEST_BACKUP_FOR_S3=`find /var/opt/tableau/tableau_server/data/tabsvc/files/backups/ -type f -name '*.tsbak' -mmin -1`
 
 # Upload backup to S3
 echo "== Uploading backup to S3"
-if aws s3 cp $NEWEST_BACKUP_FOR_S3 $DATA_ARCHIVE_TAB_BACKUP_URL --no-progress; then
+if aws s3 cp $NEWEST_BACKUP_FOR_S3 $BACKUP_LOCATION --no-progress; then
   echo "== Upload successful"
   # If successful: cleanup - delete local backups older than 24 hours (ish)
   echo "== Removing old backup files"
