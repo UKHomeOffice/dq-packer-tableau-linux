@@ -20,19 +20,19 @@ echo "== Generating Tableau Server backup"
 tsm maintenance backup --file ts_backup --append-date
 
 # Lookup Green/Blue from S3
-export IP=$(aws s3 cp s3://$S3_HAPROXY_CONFIG_BUCKET/haproxy.cfg - | grep "server tableau_int" | awk '{ print $3 }' | awk -F : '{ print $1 }')
+export IP=$(aws s3 cp s3://$S3_HAPROXY_CONFIG_BUCKET/haproxy.cfg - | grep -m 1 | awk -F // '{ print $2 }' | tr -d '/'
 export CURRENT_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
-DATE=$(date +%Y-%m-%d-%H:%M:%S)
+
 
 if [ IP == CURRENT_IP ]; then
   echo "== Set destination as Green instance"
-  export BACKUP_LOCATION="$DATA_ARCHIVE_TAB_BACKUP_URL"green/$DATE/
+  export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/green/"
 elif [ IP != CURRENT_IP ]; then
   echo "== Set destination as Blue instance"
-  export BACKUP_LOCATION="$DATA_ARCHIVE_TAB_BACKUP_URL"blue/$DATE/
+  export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/blue/"
 else
   echo "== FAILED: Failed to set Green/Blue instace..."
-  exit
+  exit 1
 fi
 
 # Export env_var for newly created backup
