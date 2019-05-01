@@ -20,7 +20,7 @@ echo "== Generating Tableau Server backup"
 tsm maintenance backup --file ts_backup --append-date
 
 # Lookup Green/Blue from S3
-export IP=$(aws s3 cp s3://$S3_HAPROXY_CONFIG_BUCKET/haproxy.cfg - | grep -m 1 | awk -F // '{ print $2 }' | tr -d '/'
+export IP=$(aws s3 cp s3://$S3_HTTPD_CONFIG_BUCKET/ssl.conf - | grep -m 1 ProxyPass | awk -F // '{ print $2 }' | tr -d '/')
 export CURRENT_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 
 
