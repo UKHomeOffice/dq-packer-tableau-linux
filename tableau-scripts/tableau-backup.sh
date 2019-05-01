@@ -24,10 +24,10 @@ export IP=$(aws s3 cp s3://$S3_HTTPD_CONFIG_BUCKET/ssl.conf - | grep -m 1 ProxyP
 export CURRENT_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 
 
-if [ IP == CURRENT_IP ]; then
+if [ $IP == $CURRENT_IP ]; then
   echo "== Set destination as Green instance"
   export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/green/"
-elif [ IP != CURRENT_IP ]; then
+elif [ $IP != $CURRENT_IP ]; then
   echo "== Set destination as Blue instance"
   export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/blue/"
 else
