@@ -27,12 +27,9 @@ export CURRENT_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 if [ $IP == $CURRENT_IP ]; then
   echo "== Set destination as Green instance"
   export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/green/"
-elif [ $IP != $CURRENT_IP ]; then
+else
   echo "== Set destination as Blue instance"
   export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/blue/"
-else
-  echo "== FAILED: Failed to set Green/Blue instace..."
-  exit 1
 fi
 
 # Export env_var for newly created backup
