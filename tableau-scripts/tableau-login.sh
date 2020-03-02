@@ -7,4 +7,6 @@ fi
 
 SITE=$1
 
-tabcmd login -s localhost --username "$TAB_ADMIN_USER" --password "$TAB_ADMIN_PASSWORD" --site "$SITE"
+err = tabcmd login -s localhost --username "$TAB_ADMIN_USER" --password "$TAB_ADMIN_PASSWORD" --site "$SITE"
+
+return err
