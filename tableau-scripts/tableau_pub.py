@@ -28,6 +28,8 @@ This script publishes the required tableau artefacts
  |   |   |-- Project2
  |   |   |   |-- WorkBook1
  |   |   |   |-- WorkBook2
+
+ # TODO: Add options based on whole projects
 """
 
 import glob
