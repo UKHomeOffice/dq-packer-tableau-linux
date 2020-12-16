@@ -111,6 +111,13 @@
         - zip
         - unzip
 
+  - name: Install the Athena Driver
+    shell: |
+      mkdir /opt/tableau/tableau_driver/jdbc
+      cp /tmp/install/AthenaJDBC42.jar /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
+      chmod 755 /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
+    become: true
+
   - name: Download cloudwatch logs agent
     get_url:
       url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
