@@ -31,9 +31,9 @@ steps:
   - packer build packer.json
   environment:
     AWS_ACCESS_KEY_ID:
-      from_secret: AWS_ACCESS_KEY_ID
+      from_secret: CI_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY:
-      from_secret: AWS_SECRET_ACCESS_KEY
+      from_secret: CI_SECRET_ACCESS_KEY
   when:
     event:
     - push
@@ -42,7 +42,7 @@ steps:
   pull: if-not-exists
   image: quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
   commands:
-  - export filters="--owner 797728447925 --filters "Name=name,Values=dq-tableau-linux-*""
+  - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
   - export aws_id=$${NOTPROD_ACC_ID}
   - export aws_key=$${NOTPROD_ACC_KEY}
   - export region=eu-west-2
@@ -62,7 +62,7 @@ steps:
   pull: if-not-exists
   image: quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
   commands:
-  - export filters="--owner 797728447925 --filters "Name=name,Values=dq-tableau-linux-*""
+  - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
   - export aws_id=$${PROD_ACC_ID}
   - export aws_key=$${PROD_ACC_KEY}
   - export region=eu-west-2
