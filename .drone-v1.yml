@@ -1,0 +1,83 @@
+---
+kind: pipeline
+name: default
+type: kubernetes
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: validate
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/dq-packer-ansible
+  commands:
+  - export HOME=/home/packer
+  - packer validate packer.json
+
+- name: inspect
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/dq-packer-ansible
+  commands:
+  - export HOME=/home/packer
+  - packer inspect packer.json
+
+- name: build
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/dq-packer-ansible
+  commands:
+  - export HOME=/home/packer
+  - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
+  - packer build packer.json
+  environment:
+    AWS_ACCESS_KEY_ID:
+      from_secret: AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: AWS_SECRET_ACCESS_KEY
+  when:
+    event:
+    - push
+
+- name: packer-copy-notprod
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
+  commands:
+  - export filters="--owner 797728447925 --filters "Name=name,Values=dq-tableau-linux-*""
+  - export aws_id=$${NOTPROD_ACC_ID}
+  - export aws_key=$${NOTPROD_ACC_KEY}
+  - export region=eu-west-2
+  - export HOME=/home/packer
+  - cd /home/packer
+  - ./build.sh
+  environment:
+    NOTPROD_ACC_ID:
+      from_secret: NOTPROD_ACC_ID
+    NOTPROD_ACC_KEY:
+      from_secret: NOTPROD_ACC_KEY
+  when:
+    event:
+    - push
+
+- name: packer-copy-prod
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
+  commands:
+  - export filters="--owner 797728447925 --filters "Name=name,Values=dq-tableau-linux-*""
+  - export aws_id=$${PROD_ACC_ID}
+  - export aws_key=$${PROD_ACC_KEY}
+  - export region=eu-west-2
+  - export HOME=/home/packer
+  - cd /home/packer
+  - ./build.sh
+  environment:
+    PROD_ACC_ID:
+      from_secret: PROD_ACC_ID
+    PROD_ACC_KEY:
+      from_secret: PROD_ACC_KEY
+  when:
+    branch:
+    - master
+    event:
+    - push
+
+...
