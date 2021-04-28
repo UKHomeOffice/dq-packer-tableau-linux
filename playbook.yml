@@ -149,10 +149,10 @@
       job: /usr/bin/startcloudwatchlogs.sh
 
   - name: Download cloudwatch agent (for ec2 alarms)
-      get_url:
-        url: https://s3.amazonaws.com/amazoncloudwatch-agent/centos/amd64/latest/amazon-cloudwatch-agent.rpm
-        dest: /tmp/amazon-cloudwatch-agent.rpm
-        mode: "+x"
+    get_url:
+      url: https://s3.amazonaws.com/amazoncloudwatch-agent/centos/amd64/latest/amazon-cloudwatch-agent.rpm
+      dest: /tmp/amazon-cloudwatch-agent.rpm
+      mode: "+x"
 
   - name: Install cloudwatch agent (for ec2 alarms)
     yum:
@@ -160,7 +160,7 @@
       state: present
 
    - name: Cloudwatch Agent config
-      copy:
+     copy:
         dest: /opt/aws/amazon-cloudwatch-agent/bin/config.json
         content: |
                   {
@@ -213,46 +213,46 @@
                   }
 
    - name: Cloudwatch logs config
-        copy:
-          dest: /tmp/cwlogs.conf
-          content: |
-            [general]
-            state_file = /var/awslogs/state/agent-state
-            [/var/log/messages]
-            file = /var/log/messages
-            log_group_name = /TABLEAU/messages
-            log_stream_name = {instance_id}
-            datetime_format = %b %d %H:%M:%S
-            [/TABLEAU/cloud-init]
-            file = /var/log/cloud-init.log
-            log_group_name = /TABLEAU/cloud-init
-            log_stream_name = {instance_id}
-            datetime_format = %Y-%m-%d %H:%M:%S,%f
-            [/TABLEAU/cloud-init/output]
-            file = /var/log/cloud-init-output.log
-            log_group_name = /TABLEAU/cloud-init/output
-            log_stream_name = {instance_id}
-            datetime_format = %Y-%m-%d %H:%M:%S,%f
-            [/TABLEAU/cron]
-            file = /var/log/cron
-            log_group_name = /TABLEAU/cron
-            log_stream_name = {instance_id}
-            datetime_format = %Y-%m-%d %H:%M:%S,%f
-            [/TABLEAU/secure]
-            file = /var/log/secure
-            log_group_name = /TABLEAU/secure
-            log_stream_name = {instance_id}
-            datetime_format = %Y-%m-%d %H:%M:%S,%f
-            [/TABLEAU/yum]
-            file = /var/log/yum.log
-            log_group_name = /TABLEAU/yum
-            log_stream_name = {instance_id}
-            datetime_format = %Y-%m-%d %H:%M:%S,%f
-            [/TABLEAU/syslog]
-            file = /var/log/syslog
-            log_group_name = /TABLEAU/syslog
-            log_stream_name = {instance_id}
-            datetime_format = %Y-%m-%d %H:%M:%S,%f
+     copy:
+        dest: /tmp/cwlogs.conf
+        content: |
+          [general]
+          state_file = /var/awslogs/state/agent-state
+          [/var/log/messages]
+          file = /var/log/messages
+          log_group_name = /TABLEAU/messages
+          log_stream_name = {instance_id}
+          datetime_format = %b %d %H:%M:%S
+          [/TABLEAU/cloud-init]
+          file = /var/log/cloud-init.log
+          log_group_name = /TABLEAU/cloud-init
+          log_stream_name = {instance_id}
+          datetime_format = %Y-%m-%d %H:%M:%S,%f
+          [/TABLEAU/cloud-init/output]
+          file = /var/log/cloud-init-output.log
+          log_group_name = /TABLEAU/cloud-init/output
+          log_stream_name = {instance_id}
+          datetime_format = %Y-%m-%d %H:%M:%S,%f
+          [/TABLEAU/cron]
+          file = /var/log/cron
+          log_group_name = /TABLEAU/cron
+          log_stream_name = {instance_id}
+          datetime_format = %Y-%m-%d %H:%M:%S,%f
+          [/TABLEAU/secure]
+          file = /var/log/secure
+          log_group_name = /TABLEAU/secure
+          log_stream_name = {instance_id}
+          datetime_format = %Y-%m-%d %H:%M:%S,%f
+          [/TABLEAU/yum]
+          file = /var/log/yum.log
+          log_group_name = /TABLEAU/yum
+          log_stream_name = {instance_id}
+          datetime_format = %Y-%m-%d %H:%M:%S,%f
+          [/TABLEAU/syslog]
+          file = /var/log/syslog
+          log_group_name = /TABLEAU/syslog
+          log_stream_name = {instance_id}
+          datetime_format = %Y-%m-%d %H:%M:%S,%f
 
   - name: Set DNS Resolver Options
     blockinfile:
