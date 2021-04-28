@@ -161,56 +161,56 @@
 
    - name: Cloudwatch Agent config
      copy:
-        dest: /opt/aws/amazon-cloudwatch-agent/bin/config.json
-        content: |
-                  {
-                  "agent": {
-                          "metrics_collection_interval": 60,
-                          "run_as_user": "centos"
-                  },
-                  "metrics": {
-                          "namespace": "CWAgent",
-                          "append_dimensions": {
-                                  "InstanceId": "${aws:InstanceId}"
-                          },
-                          "metrics_collected": {
-                                  "disk": {
-                                          "measurement": [
-                                                  "used_percent"
-                                          ],
-                                          "metrics_collection_interval": 60,
-                                          "resources": [
-                                                  "/"
-                                          ]
-                                  },
-                                  "diskio": {
-                                          "measurement": [
-                                                  "io_time"
-                                          ],
-                                          "metrics_collection_interval": 60,
-                                          "resources": [
-                                                  "*"
-                                          ]
-                                  },
-                                  "mem": {
-                                          "measurement": [
-                                                  "mem_used_percent",
-                                                  "mem_available_percent",
-                                                  "mem_used",
-                                                  "mem_cached",
-                                                  "mem_total"
-                                          ],
-                                          "metrics_collection_interval": 60
-                                  },
-                                  "swap": {
-                                    "measurement": [
-                                            "swap_used_percent"
-                                    ],
-                                    "metrics_collection_interval": 60
-                                          }
-                                  }
-                          }
-                  }
+       dest: /opt/aws/amazon-cloudwatch-agent/bin/config.json
+       content: |
+                 {
+                 "agent": {
+                         "metrics_collection_interval": 60,
+                         "run_as_user": "centos"
+                 },
+                 "metrics": {
+                         "namespace": "CWAgent",
+                         "append_dimensions": {
+                                 "InstanceId": "${aws:InstanceId}"
+                         },
+                         "metrics_collected": {
+                                 "disk": {
+                                         "measurement": [
+                                                 "used_percent"
+                                         ],
+                                         "metrics_collection_interval": 60,
+                                         "resources": [
+                                                 "/"
+                                         ]
+                                 },
+                                 "diskio": {
+                                         "measurement": [
+                                                 "io_time"
+                                         ],
+                                         "metrics_collection_interval": 60,
+                                         "resources": [
+                                                 "*"
+                                         ]
+                                 },
+                                 "mem": {
+                                         "measurement": [
+                                                 "mem_used_percent",
+                                                 "mem_available_percent",
+                                                 "mem_used",
+                                                 "mem_cached",
+                                                 "mem_total"
+                                         ],
+                                         "metrics_collection_interval": 60
+                                 },
+                                 "swap": {
+                                   "measurement": [
+                                           "swap_used_percent"
+                                   ],
+                                   "metrics_collection_interval": 60
+                                         }
+                                 }
+                         }
+                 }
 
    - name: Cloudwatch logs config
      copy:
