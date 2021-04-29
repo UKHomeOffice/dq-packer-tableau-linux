@@ -176,7 +176,7 @@
                         "metrics_collected": {
                                 "disk": {
                                         "measurement": [
-                                                "used_percent"
+                                                "disk_used_percent"
                                         ],
                                         "metrics_collection_interval": 60,
                                         "resources": [
