@@ -213,7 +213,7 @@
                 }
 
   - name: Cloudwatch logs config
-   copy:
+    copy:
       dest: /tmp/cwlogs.conf
       content: |
         [general]
