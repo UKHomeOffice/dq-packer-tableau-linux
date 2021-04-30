@@ -180,8 +180,13 @@
                                         ],
                                         "metrics_collection_interval": 60,
                                         "resources": [
-                                                "/"
-                                        ]
+                                                "*"
+                                        ],
+                                        "ignore_file_system_types": [
+                                                "devtmpfs",
+                                                "tmpfs"
+                                        ],
+                                        "drop_device": true
                                 },
                                 "diskio": {
                                         "measurement": [
