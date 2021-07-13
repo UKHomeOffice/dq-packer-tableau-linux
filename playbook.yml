@@ -105,16 +105,17 @@
   - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
     yum:
       name:
-        - /tmp/install/tableau-postgresql-odbc-gold-master.x86_64.rpm
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
         - zip
         - unzip
 
-  - name: Install the Athena Driver
+  - name: Install the Postgresql & Athena JDBC Driver
     shell: |
       mkdir /opt/tableau/tableau_driver/jdbc
       cp /tmp/install/AthenaJDBC42.jar /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
+      cp /tmp/install/postgresql-42.2.14.jar /opt/tableau/tableau_driver/jdbc/postgresql-42.2.14.jar
+      chmod 755 /opt/tableau/tableau_driver/jdbc/postgresql-42.2.14.jar
       chmod 755 /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
     become: true
 
