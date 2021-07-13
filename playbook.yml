@@ -112,7 +112,7 @@
 
   - name: Install the Postgresql & Athena JDBC Driver
     shell: |
-      mkdir /opt/tableau/tableau_driver/jdbc
+      mkdir -p /opt/tableau/tableau_driver/jdbc
       cp /tmp/install/AthenaJDBC42.jar /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
       cp /tmp/install/postgresql-42.2.14.jar /opt/tableau/tableau_driver/jdbc/postgresql-42.2.14.jar
       chmod 755 /opt/tableau/tableau_driver/jdbc/postgresql-42.2.14.jar
