@@ -44,12 +44,12 @@
       group: tableau_srv
       mode: 0644
 
-  - name: Create cronjob to run Tableau to S3 backup script every day at 7PM
+  - name: Create cronjob to run script to backup Tableau to S3 every day at 8am
     cron:
       name: Tableau to S3 backup
       user: tableau_srv
       minute: 0
-      hour: 19
+      hour: 8
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
   - name: Yum Install Dependencies
