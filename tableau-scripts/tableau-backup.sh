@@ -24,9 +24,11 @@ if [ $TABLEAU_ENVIRONMENT == "internal" ]; then
   export IP=$(aws s3 cp s3://$S3_HTTPD_CONFIG_BUCKET/ssl.conf - | grep -m 1 ProxyPass | awk -F // '{ print $2 }' | tr -d '/')
 elif [ $TABLEAU_ENVIRONMENT == "external" ]; then
   export IP=$(aws s3 cp s3://$S3_HAPROXY_CONFIG_BUCKET/haproxy.cfg - | grep "server tableau_ext" | awk '{ print $3 }' | awk -F : '{ print $1 }')
-else
-  echo "environment is staging"
+elif [ $TABLEAU_ENVIRONMENT == "staging" ]; then
+  echo "Environment is Staging"
   STAGING=1
+else
+  echo "Unknown Tableau Server type, not backing up. Exiting..."
 
 fi
 
@@ -41,7 +43,7 @@ elif (( $STAGING == 1 )); then
   export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/staging/"
 else
   echo "== Set destination as Blue instance"
-  export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/blue/"
+  export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/${CURRENT_IP}/"
 
 fi
 
