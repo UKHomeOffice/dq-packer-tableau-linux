@@ -48,8 +48,8 @@
     cron:
       name: Tableau to S3 backup
       user: tableau_srv
-      minute: 0
-      hour: 8
+      minute: 15
+      hour: 12
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
   - name: Yum Install Dependencies
