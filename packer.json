@@ -37,7 +37,7 @@
         },
         {
           "device_name": "xvdc",
-          "volume_size": 350,
+          "volume_size": 450,
           "volume_type": "gp2",
           "delete_on_termination": true
         }
