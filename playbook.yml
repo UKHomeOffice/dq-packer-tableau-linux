@@ -38,11 +38,18 @@
   - name: Ensure Tableau backup to S3 log file for tableau_srv user exists
     copy:
       content: ""
-      dest: /var/log/last-tab-backup-to-s3.log
+      dest: /var/log/tableau-backup-to-s3.log
       force: no
       owner: tableau_srv
       group: tableau_srv
       mode: 0644
+
+  - name: Create directory for old Tableau backup files for tableau_srv user
+    file:
+      path: /var/log/tableau-backup-logs
+      state: directory
+      mode: 0755
+      owner: tableau_srv
 
   - name: Create cronjob to run script to backup Tableau to S3 every day at 10am
     cron:
