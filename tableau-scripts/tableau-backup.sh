@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Script to generate Tableau server backup and upload to amazon S3 - intended to be run as the tableau_srv user
 
+# Add location of aws to PATH
+PATH=${PATH}:/usr/local/bin
+
 # log variables - set up in Packer Playbook
 log_dir=/var/log/
 log_file=tableau-backup-to-s3.log
@@ -71,8 +74,17 @@ else
   export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/blue/${CURRENT_IP}/"
 fi
 
+
 # Export env_var for newly created backup (created in the past 1 minute)
+export NEWEST_BACKUP_FILE_COUNT=`find ${backup_dir} -type f -name '*.tsbak' -mmin -1 | wc -l`
 export NEWEST_BACKUP_FOR_S3=`find ${backup_dir} -type f -name '*.tsbak' -mmin -1`
+if [ ${NEWEST_BACKUP_FILE_COUNT} -ne 1 ];
+then
+  echo "== ERROR: Found ${NEWEST_BACKUP_FILE_COUNT} backup files in ${backup_dir}."
+  echo "== Exiting..."
+  exit -3
+fi
+
 
 # Upload backup to S3
 echo "== Uploading backup to S3"
