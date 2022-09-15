@@ -56,7 +56,7 @@
       name: Tableau to S3 backup
       user: tableau_srv
       minute: 0
-      hour: 10
+      hour: 16
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
   - name: Yum Install Dependencies

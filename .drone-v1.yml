@@ -1,4 +1,9 @@
 ---
+global-variables:
+  vault-image: &vault-image  docker.digital.homeoffice.gov.uk/dq/dq-vault-awscli:1.43
+  packer-image: &packer-image quay.io/ukhomeofficedigital/dq-packer-ansible
+  copy-image: &copy-image quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
+
 kind: pipeline
 name: default
 type: kubernetes
@@ -7,77 +12,155 @@ platform:
   os: linux
   arch: amd64
 
+x-anchors:
+  retrieve-deployment-aws-key: &retrieve-deployment-aws-key
+    # Retrive vault secrets
+    - vault read aws_dacc_dq/creds/drone > aws_creds.json
+    - export LEASE_ID=$(cat aws_creds.json | grep lease_id | awk -F ' ' '{print $2}')
+    # Update the token TTL to 10mins
+    - vault lease renew -increment=3600 $${LEASE_ID}
+    # Get the AWS credentials
+    - echo "export AWS_ACCESS_KEY_ID=$(cat aws_creds.json | grep access_key | awk -F ' ' '{print $2}')" > set_aws_secrets.sh
+    - echo "export aws_id=$(cat aws_creds.json | grep access_key | awk -F ' ' '{print $2}')" >> set_aws_secrets.sh
+    - echo "export AWS_SECRET_ACCESS_KEY=$(cat aws_creds.json | grep secret_key | awk -F ' ' '{print $2}')" >> set_aws_secrets.sh
+    - echo "export aws_key=$(cat aws_creds.json | grep secret_key | awk -F ' ' '{print $2}')" >> set_aws_secrets.sh
+    - echo "export AWS_DEFAULT_REGION=eu-west-2" >> set_aws_secrets.sh
+    # Since AWS is eventually consistent we need to sleep a little while so the AWS key is created and made available
+    - sleep 20
+
 steps:
 - name: validate
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/dq-packer-ansible
+  image: *packer-image
   commands:
   - export HOME=/home/packer
   - packer validate packer.json
 
 - name: inspect
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/dq-packer-ansible
+  image: *packer-image
   commands:
   - export HOME=/home/packer
   - packer inspect packer.json
 
+- name: retrieve_aws_secrets_ci
+  pull: if-not-exists
+  image: *vault-image
+  commands:
+    *retrieve-deployment-aws-key
+  environment:
+    VAULT_ADDR:
+      from_secret: VAULT_ADDR_SIT
+    VAULT_TOKEN:
+      from_secret: VAULT_TOKEN_SIT
+  when:
+    event:
+      - push
+
 - name: build
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/dq-packer-ansible
+  image: *packer-image
   commands:
+  - source ./set_aws_secrets.sh
   - export HOME=/home/packer
   - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
   - packer build packer.json
-  environment:
-    AWS_ACCESS_KEY_ID:
-      from_secret: CI_ACCESS_KEY_ID
-    AWS_SECRET_ACCESS_KEY:
-      from_secret: CI_SECRET_ACCESS_KEY
   when:
     event:
     - push
+
+- name: retrieve_aws_secrets_np
+  pull: if-not-exists
+  image: *vault-image
+  commands:
+    *retrieve-deployment-aws-key
+  environment:
+    VAULT_ADDR:
+      from_secret: VAULT_ADDR_NOTPROD
+    VAULT_TOKEN:
+      from_secret: VAULT_TOKEN_NOTPROD
+  when:
+    event:
+      - push
 
 - name: packer-copy-notprod
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
+  image: *copy-image
   commands:
+  - source ./set_aws_secrets.sh
   - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
-  - export aws_id=$${NOTPROD_ACC_ID}
-  - export aws_key=$${NOTPROD_ACC_KEY}
   - export region=eu-west-2
   - export HOME=/home/packer
   - cd /home/packer
   - ./build.sh
-  environment:
-    NOTPROD_ACC_ID:
-      from_secret: NOTPROD_ACC_ID
-    NOTPROD_ACC_KEY:
-      from_secret: NOTPROD_ACC_KEY
   when:
     event:
     - push
 
-- name: packer-copy-prod
+- name: retrieve_aws_secrets_prod
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
+  image: *vault-image
   commands:
-  - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
-  - export aws_id=$${PROD_ACC_ID}
-  - export aws_key=$${PROD_ACC_KEY}
-  - export region=eu-west-2
-  - export HOME=/home/packer
-  - cd /home/packer
-  - ./build.sh
+    *retrieve-deployment-aws-key
   environment:
-    PROD_ACC_ID:
-      from_secret: PROD_ACC_ID
-    PROD_ACC_KEY:
-      from_secret: PROD_ACC_KEY
+    VAULT_ADDR:
+      from_secret: VAULT_ADDR_PROD
+    VAULT_TOKEN:
+      from_secret: VAULT_TOKEN_PROD
   when:
     branch:
     - master
     event:
     - push
 
+- name: packer-copy-prod
+  pull: if-not-exists
+  image: *copy-image
+  commands:
+  - source ./set_aws_secrets.sh
+  - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
+  - export region=eu-west-2
+  - export HOME=/home/packer
+  - cd /home/packer
+  - ./build.sh
+  when:
+    branch:
+    - master
+    event:
+    - push
+
+- name: renew-vault-tokens
+  pull: if-not-exists
+  image: *vault-image
+  commands:
+    # Renew NotProd Drone Vault Token
+    - export VAULT_TOKEN=$${VAULT_TOKEN_NOTPROD}
+    - export VAULT_ADDR=$${VAULT_ADDR_NOTPROD}
+    - vault token renew > /dev/null
+    # Renew Prod Drone Vault Token
+    - export VAULT_TOKEN=$${VAULT_TOKEN_PROD}
+    - export VAULT_ADDR=$${VAULT_ADDR_PROD}
+    - vault token renew > /dev/null
+    # Renew CI Drone Vault Token
+    - export VAULT_TOKEN=$${VAULT_TOKEN_SIT}
+    - export VAULT_ADDR=$${VAULT_ADDR_SIT}
+    - vault token renew > /dev/null    
+  environment:
+    VAULT_ADDR_NOTPROD:
+      from_secret: VAULT_ADDR_NOTPROD
+    VAULT_TOKEN_NOTPROD:
+      from_secret: VAULT_TOKEN_NOTPROD
+    VAULT_ADDR_PROD:
+      from_secret: VAULT_ADDR_PROD
+    VAULT_TOKEN_PROD:
+      from_secret: VAULT_TOKEN_PROD
+    VAULT_ADDR_SIT:
+      from_secret: VAULT_ADDR_SIT
+    VAULT_TOKEN_SIT:
+      from_secret: VAULT_TOKEN_SIT 
+  when:
+    event:
+      - cron
+    cron:
+      - renew-vault-tokens
 ...
