@@ -14,7 +14,7 @@
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
-          "name": "CentOS Linux 7 x86_64 HVM EBS ENA 1*",
+          "name": "CentOS Linux 7 x86_64 HVM EBS ENA*",
           "root-device-type": "ebs"
         },
         "owners": [
