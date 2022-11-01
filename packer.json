@@ -14,11 +14,11 @@
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
-          "name": "*CentOS79*ENA*",
+          "name": "*CENTOS7ENA*",
           "root-device-type": "ebs"
         },
         "owners": [
-          "679593333241"
+          "626107101308"
         ],
         "most_recent": true
       },
