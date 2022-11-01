@@ -14,11 +14,11 @@
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
-          "name": "CentOS-7-2111-20220825*",
+          "name": "CentOS*7.9*",
           "root-device-type": "ebs"
         },
         "owners": [
-          "679593333241"
+          "057448758665"
         ],
         "most_recent": true
       },
