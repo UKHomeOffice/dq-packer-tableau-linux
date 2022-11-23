@@ -14,11 +14,11 @@
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
-          "name": "*CentOS-7.9*",
+          "name": "AWSCEN85X650002*",
           "root-device-type": "ebs"
         },
         "owners": [
-          "289598828687"
+          "679593333241"
         ],
         "most_recent": true
       },
