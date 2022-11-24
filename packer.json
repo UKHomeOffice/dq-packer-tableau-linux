@@ -14,7 +14,7 @@
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
-          "ImageId": "ami-0e1621fc49b344ccd",
+          "name": "*AWSCEN85X650002*",
           "root-device-type": "ebs"
         },
         "owners": [
