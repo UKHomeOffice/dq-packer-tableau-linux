@@ -42,7 +42,7 @@
           "delete_on_termination": true
         }
       ],
-      "ssh_username": "centos",
+      "ssh_username": "cloudimg",
       "instance_type": "r5d.4xlarge",
       "ami_name": "dq-tableau-linux-{{user `drone_build_number`}}",
       "ami_users": [
