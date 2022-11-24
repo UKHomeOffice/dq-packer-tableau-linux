@@ -14,7 +14,7 @@
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
-          "name": "*AWSCEN85X650002*",
+          "ami_name": "*AWSCEN85X650002*",
           "root-device-type": "ebs"
         },
         "owners": [
