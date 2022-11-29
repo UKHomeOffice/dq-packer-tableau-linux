@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw: test -e /usr/bin/python || ( dnf install python-minimal )
+    - raw: test -e /usr/bin/python || ( dnf remove subscription-manager && dnf install python-minimal )
 
 - name: Build Tableau Linux Server
   hosts: all
