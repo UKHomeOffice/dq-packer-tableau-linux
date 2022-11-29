@@ -14,12 +14,10 @@
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
-          "name": "AWSCEN85X650002-1396c36f-ebe9-4202-8bd8-435a77344dfc",
+          "name": "RHEL-8*-x86_64-*",
           "root-device-type": "ebs"
         },
-        "owners": [
-          "679593333241"
-        ],
+        "owners": ["309956199498"],
         "most_recent": true
       },
       "launch_block_device_mappings": [
