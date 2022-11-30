@@ -42,7 +42,7 @@
           "delete_on_termination": true
         }
       ],
-      "ssh_username": cloudimg",
+      "ssh_username": "cloudimg",
       "ssh_timeout": "60m",
       "instance_type": "m5.large",
       "ami_name": "dq-tableau-linux-{{user `drone_build_number`}}",
