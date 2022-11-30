@@ -43,8 +43,8 @@
         }
       ],
       "ssh_username": "cloudimg",
-      "ssh_timeout": "60m",
-      "instance_type": "m5.large",
+      "ssh_timeout": "5m",
+      "instance_type": "m4.large",
       "ami_name": "dq-tableau-linux-{{user `drone_build_number`}}",
       "ami_users": [
         "483846886818",
