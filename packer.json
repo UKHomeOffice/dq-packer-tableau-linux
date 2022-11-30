@@ -11,17 +11,7 @@
       "secret_key": "{{user `secret_key`}}",
       "region": "eu-west-2",
       "iam_instance_profile": "packer_builder",
-      "source_ami_filter": {
-        "filters": {
-          "virtualization-type": "hvm",
-          "name": "AWSCEN85X650002-1396c36f-ebe9-4202-8bd8-435a77344dfc",
-          "root-device-type": "ebs"
-        },
-        "owners": [
-          "679593333241"
-        ],
-        "most_recent": true
-      },
+      "source_ami": "ami-03b3e12c4298ec372",
       "launch_block_device_mappings": [
         {
           "device_name": "/dev/sda1",
@@ -42,9 +32,9 @@
           "delete_on_termination": true
         }
       ],
-      "ssh_username": "cloudimg",
+      "ssh_username": "ec2-user",
       "ssh_timeout": "5m",
-      "instance_type": "m4.large",
+      "instance_type": "r5d.4xlarge",
       "ami_name": "dq-tableau-linux-{{user `drone_build_number`}}",
       "ami_users": [
         "483846886818",
