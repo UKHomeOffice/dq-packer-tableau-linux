@@ -59,8 +59,8 @@
       hour: 16
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
-  - name: Yum Install Dependencies
-    yum: name={{ item }}
+  - name: DNF Install Dependencies
+    dnf: name={{ item }}
     with_items:
       - epel-release
       - gcc
