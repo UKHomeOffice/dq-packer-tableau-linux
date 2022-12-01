@@ -110,7 +110,7 @@
     shell: /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
 
   - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
-    yum:
+    dnf:
       name:
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
@@ -163,7 +163,7 @@
       mode: "+x"
 
   - name: Install cloudwatch agent (for ec2 alarms)
-    yum:
+    dnf:
       name: /tmp/amazon-cloudwatch-agent.rpm
       state: present
 
