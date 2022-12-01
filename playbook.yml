@@ -77,12 +77,6 @@
     shell: yum update -y
     become: true
 
-  - name: Install getpagespeed module (prereq for cloud-utils)
-    shell: rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial && dnf install -y https://extras.getpagespeed.com/release-latest.rpm 
-
-  - name: Install cloud-utils 
-    shell: dnf install -y cloud-utils
-
   - name: Download Python 3.7
     unarchive:
      src: https://www.python.org/ftp/python/3.8.12/Python-3.8.12.tgz
