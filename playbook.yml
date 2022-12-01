@@ -69,13 +69,16 @@
       - zlib-devel
       - wget
       - git
-      - cloud-utils
+      - cloud-utils-growpart
       - libffi-devel
     become: true
 
   - name: Yum Update
     shell: yum update -y
     become: true
+
+  - name: Install cloud-utils 
+    shell: dnf install https://extras.getpagespeed.com/release-latest.rpm && dnf install cloud-utils
 
   - name: Download Python 3.7
     unarchive:
