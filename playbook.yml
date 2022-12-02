@@ -152,7 +152,7 @@
   - name: Install cloudwatch log agent
     environment:
       LC_ALL: C
-    shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf --python=/usr/bin/python3.5
+    shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf --python=/usr/local/bin/python3.5
     args:
       creates: /var/awslogs/etc/aws.conf
 
