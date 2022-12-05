@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw: test -e /usr/bin/python || ( yum -y update && yum install -y python2 && yum install -y python3 && yum module install -y python3* && alternatives --set python /usr/bin/python3 )
+    - raw: test -e /usr/bin/python || ( yum -y update && yum install -y python3 && yum module install -y python3* && alternatives --set python /usr/bin/python3 )
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -133,12 +133,15 @@
       mode: "+x"
 
   - name: GET Cloudwatch logs config from DQ-config-bucket
-    shell: /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
+    shell: | 
+      /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
+      /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/awslogs-agent-setup.py /tmp
+
 
   - name: Install cloudwatch log agent
     environment:
       LC_ALL: C
-    shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf --python=/usr/bin/python2
+    shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf 
     args:
       creates: /var/awslogs/etc/aws.conf
 
