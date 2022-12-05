@@ -136,23 +136,13 @@
     shell: /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
 
 
-  - name: Download Python 3.5
-    unarchive:
-     src: https://www.python.org/ftp/python/3.5.1/Python-3.5.1.tgz
-     dest: /usr/src
-     remote_src: yes
-    become: true
-
   - name: Configure, build, test and install Python 3.7
-    shell: |
-      cd /usr/src/Python-3.5.1
-      ./configure --enable-optimizations
-      make altinstall
+    dnf: python2
 
   - name: Install cloudwatch log agent
     environment:
       LC_ALL: C
-    shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf --python=/usr/local/bin/python3.5
+    shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf --python=/usr/bin/python2
     args:
       creates: /var/awslogs/etc/aws.conf
 
