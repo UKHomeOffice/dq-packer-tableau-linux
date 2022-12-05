@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw: test -e /usr/bin/python || ( yum -y update && yum install -y python3 && yum module install -y python3* && alternatives --set python /usr/bin/python3 )
+    - raw: test -e /usr/bin/python || ( yum -y update && yum install -y python2 && yum install -y python3 && yum module install -y python3* && alternatives --set python /usr/bin/python3 )
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -134,10 +134,6 @@
 
   - name: GET Cloudwatch logs config from DQ-config-bucket
     shell: /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
-
-
-  - name: Configure, build, test and install Python 3.7
-    dnf: python2
 
   - name: Install cloudwatch log agent
     environment:
