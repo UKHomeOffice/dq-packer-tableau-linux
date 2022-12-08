@@ -61,11 +61,11 @@
       hour: 16
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
-  - name: Yum Update
-    shell: yum check-update && yum update -y
+  - name: DNF Update
+    shell: dnf clean all && rm -r /var/cache/dnf  && dnf upgrade -y && dnf update -y
     become: true
   
-  - name: Yum Install Dependencies
+  - name: DNF Install Dependencies
     dnf: 
      name:
       - "epel-release"
