@@ -18,7 +18,7 @@
   - name: Create tableau_srv user
     user:
       name: tableau_srv
-      groups: sudo
+      groups: wheel
       append: yes
  
   - name: Create .ssh directory for tableau_srv user
