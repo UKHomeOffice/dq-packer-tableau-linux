@@ -62,7 +62,9 @@
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
   - name: DNF Update
-    shell: dnf clean all && rm -r /var/cache/dnf  && dnf upgrade -y && dnf update -y
+    shell: |
+       dnf clean all && rm -r /var/cache/dnf 
+       subscription-manager release --set=8.6 && dnf upgrade -y && dnf update -y
     become: true
   
   - name: DNF Install Dependencies
@@ -77,7 +79,6 @@
       - "git"
       - "cloud-utils"
       - "libffi-devel"
-    update_cache: true
     become: true
 
 
@@ -264,7 +265,7 @@
         log_stream_name = {instance_id}
         datetime_format = %Y-%m-%d %H:%M:%S,%f
         [/TABLEAU/yum]
-        file = /var/log/yum.log
+        file = /var/log/dnf.rpm.log
         log_group_name = /TABLEAU/yum
         log_stream_name = {instance_id}
         datetime_format = %Y-%m-%d %H:%M:%S,%f
