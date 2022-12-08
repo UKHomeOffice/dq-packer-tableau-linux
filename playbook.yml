@@ -84,7 +84,7 @@
     yum_repository:
       name: eurolinux
       description: Repo for RHEL8 dependencies
-      baseurl: https://fbi2.cdn.euro-linux.com/dist/eurolinux/server/8/x86_64/certify-BaseOS
+      baseurl: https://fbi2.cdn.euro-linux.com/dist/eurolinux/server/8/x86_64/BaseOS/os
       gpgcheck: no
     become: true
 
