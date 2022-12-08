@@ -79,14 +79,13 @@
        dnf update -y
        dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
     become: true
- 
-  - name: Add repo EuroLinux BaseOS
-    yum_repositoriy:
-      name: EuroLinux-BaseOS
-      description: “Repo for RHEL8 dependencies”
-      baseurl: "https://fbi2.cdn.euro-linux.com/dist/eurolinux/server/8/x86_64/certify-BaseOS"
-      gpgcheck: yes
-      gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-eurolinux8
+
+  - name: Add repositories for RHEL8 Dependencies
+    yum_repository:
+      name: eurolinux
+      description: Repo for RHEL8 dependencies
+      baseurl: https://fbi2.cdn.euro-linux.com/dist/eurolinux/server/8/x86_64/certify-BaseOS
+      gpgcheck: no
     become: true
 
   - name: DNF Install Dependencies
