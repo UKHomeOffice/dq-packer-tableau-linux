@@ -66,17 +66,16 @@
     lineinfile:
       state   : present
       dest    : /etc/hosts
-      line    : '18.130.146.46 rhui.REGION.aws.ce.redhat.com'
+      line    : '18.130.146.46 rhui.eu-west-2.aws.ce.redhat.com'
       regexp  : ''
       insertafter: EOF
 
   - name: DNF Update
     shell: |
-       ls -lrt /etc/yum.repos.d/
+       sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui-client-config-ha.repo
+       sed -i 's/sslverify=1/sslverify=0/' /etc/yum.repos.d/redhat-rhui-client-config-ha.repo
        dnf clean all && rm -r /var/cache/dnf 
        sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
-       subscription-manager repo-override --repo=YOUR_EXT_REPO --remove=sslverify
-       subscription-manager repo-override --repo=YOUR_EXT_REPO --add=sslverify:0
        dnf update -y
     become: true
   
