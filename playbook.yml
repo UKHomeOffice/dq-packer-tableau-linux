@@ -65,7 +65,7 @@
     shell: yum check-update && yum update -y
     become: true
   
-- name: Yum Install Dependencies
+  - name: Yum Install Dependencies
     yum: 
      name:
       - "epel-release"
