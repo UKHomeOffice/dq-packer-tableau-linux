@@ -90,7 +90,7 @@
       - "zlib-devel"
       - "wget"
       - "git"
-      - "cloud-utils"
+      - "cloud-utils-growpart"
       - "libffi-devel"
     become: true
 
