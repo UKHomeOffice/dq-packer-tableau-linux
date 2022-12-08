@@ -92,7 +92,7 @@
     yum_repository:
       name: centos8-mirror 
       description: Repo from centos appstream
-      baseurl: http://mirror.centos.org/centos/8/AppStream/x86_64/os/
+      baseurl: http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/
       gpgcheck: no
     become: true
 
