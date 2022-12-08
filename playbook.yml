@@ -64,7 +64,8 @@
   - name: DNF Update
     shell: |
        dnf clean all && rm -r /var/cache/dnf 
-       subscription-manager release --set=8.6 && dnf upgrade -y && dnf update -y
+       subscription-manager release --auto-attach --set=8.6 
+       dnf upgrade -y && dnf update -y
     become: true
   
   - name: DNF Install Dependencies
