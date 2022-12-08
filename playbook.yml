@@ -88,6 +88,14 @@
       gpgcheck: no
     become: true
 
+  - name: Add repositories from centos appstream
+    yum_repository:
+      name: centos8-mirror 
+      description: Repo from centos appstream
+      baseurl: http://mirror.centos.org/centos/8/AppStream/x86_64/os/
+      gpgcheck: no
+    become: true
+
   - name: DNF Install Dependencies
     dnf: 
      name:
