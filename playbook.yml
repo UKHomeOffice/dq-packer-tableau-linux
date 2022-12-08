@@ -68,15 +68,15 @@
 - name: Yum Install Dependencies
     yum: name={{ item }}
     with_items:
-      - epel-release
-      - gcc
-      - pcre-devel
-      - openssl-devel
-      - zlib-devel
-      - wget
-      - git
-      - cloud-utils
-      - libffi-devel
+      - "epel-release"
+      - "gcc"
+      - "pcre-devel"
+      - "openssl-devel"
+      - "zlib-devel"
+      - "wget"
+      - "git"
+      - "cloud-utils"
+      - "libffi-devel"
     become: true
 
 
