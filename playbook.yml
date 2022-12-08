@@ -77,6 +77,7 @@
        dnf clean all && rm -r /var/cache/dnf 
        sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
        dnf update -y
+       dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
     become: true
   
   - name: DNF Install Dependencies
