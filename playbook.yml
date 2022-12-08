@@ -61,7 +61,11 @@
       hour: 16
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
-  - name: Yum Install Dependencies
+  - name: Yum Update
+    shell: yum check-update && yum update -y
+    become: true
+  
+- name: Yum Install Dependencies
     yum: name={{ item }}
     with_items:
       - epel-release
@@ -75,9 +79,6 @@
       - libffi-devel
     become: true
 
-  - name: Yum Update
-    shell: yum update -y
-    become: true
 
   - name: Download Python 3.7
     unarchive:
