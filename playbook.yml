@@ -72,8 +72,11 @@
 
   - name: DNF Update
     shell: |
+       ls -lrt /etc/yum.repos.d/
        dnf clean all && rm -r /var/cache/dnf 
        sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
+       subscription-manager repo-override --repo=YOUR_EXT_REPO --remove=sslverify
+       subscription-manager repo-override --repo=YOUR_EXT_REPO --add=sslverify:0
        dnf update -y
     become: true
   
