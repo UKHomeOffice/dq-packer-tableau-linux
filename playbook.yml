@@ -61,6 +61,15 @@
       hour: 16
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
+
+  - name: Add line to /etc/hosts
+    lineinfile:
+      state   : present
+      dest    : /etc/hosts
+      line    : '18.130.146.46 rhui.REGION.aws.ce.redhat.com'
+      regexp  : ''
+      insertafter: EOF
+
   - name: DNF Update
     shell: |
        dnf clean all && rm -r /var/cache/dnf 
