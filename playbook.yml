@@ -170,7 +170,7 @@
       mode: "+x"
 
   - name: Install cloudwatch agent (for ec2 alarms)
-    yum:
+    dnf:
       name: /tmp/amazon-cloudwatch-agent.rpm
       state: present
 
