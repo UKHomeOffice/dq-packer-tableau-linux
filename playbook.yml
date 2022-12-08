@@ -66,8 +66,8 @@
     become: true
   
 - name: Yum Install Dependencies
-    yum: name={{ item }}
-    with_items:
+    yum: 
+     name:
       - "epel-release"
       - "gcc"
       - "pcre-devel"
@@ -77,6 +77,7 @@
       - "git"
       - "cloud-utils"
       - "libffi-devel"
+    update_cache: true
     become: true
 
 
