@@ -14,11 +14,11 @@
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
-          "name": "*CentOS-7.9*",
+          "name": "RHEL_HA-8.4.0_HVM-20210504-x86_64-2-Hourly2-GP2",
           "root-device-type": "ebs"
         },
         "owners": [
-          "289598828687"
+          "309956199498"
         ],
         "most_recent": true
       },
@@ -42,7 +42,7 @@
           "delete_on_termination": true
         }
       ],
-      "ssh_username": "centos",
+      "ssh_username": "ec2-user",
       "instance_type": "r5d.4xlarge",
       "ami_name": "dq-tableau-linux-{{user `drone_build_number`}}",
       "ami_users": [
