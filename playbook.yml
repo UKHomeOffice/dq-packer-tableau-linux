@@ -78,7 +78,7 @@
        sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
        dnf update -y
        dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-       dnf install -y https://yum.oracle.com/repo/OracleLinux/OL8/baseos/latest/x86_64/getPackageSource/libsepol-2.9-3.el8.src.rpm
+       dnf install -y https://fbi2.cdn.euro-linux.com/dist/eurolinux/server/8/x86_64/certify-BaseOS/all/Packages/l/libsepol-devel-2.9-3.el8.x86_64.rpm
     become: true
   
   - name: DNF Install Dependencies
