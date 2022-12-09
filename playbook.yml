@@ -110,6 +110,7 @@
       - "libffi-devel"
       - "bzip2-devel"
       - "make"
+      - "java-17-openjdk"
     become: true
 
 
@@ -144,7 +145,7 @@
 
   - name: GET Tableau files from DQ-config-bucket
     shell: |
-      /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+      /usr/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
       dnf install -y http://repo.okay.com.mx/centos/8/x86_64/release/okay-release-1-1.noarch.rpm
       dnf install -y javapackages-filesystem
 
@@ -174,8 +175,8 @@
 
   - name: GET Cloudwatch logs config from DQ-config-bucket
     shell: |
-       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
-       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/awslogs-agent-setup.py /tmp
+       /usr/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
+       /usr/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/awslogs-agent-setup.py /tmp
        chmod u+x /tmp/awsogs-agent-setup.py
 
   - name: Install cloudwatch log agent
