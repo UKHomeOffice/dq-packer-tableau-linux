@@ -142,15 +142,18 @@
       executable: /usr/bin/pip3
     become: true
 
-  - name: GET Tableau files from DQ-config-bucket
+  - name: Install java-17-openjdk
     shell: |
-      /usr/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
       dnf install -y http://repo.okay.com.mx/centos/8/x86_64/release/okay-release-1-1.noarch.rpm
       dnf install -y javapackages-filesystem
       dnf install -y java-17-openjdk
 
+  - name: GET Tableau files from DQ-config-bucket
+    shell: |
+      /usr/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+
   - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
-    dnf:
+    yum:
       name:
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
