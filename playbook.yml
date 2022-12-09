@@ -179,7 +179,7 @@
     shell: |
        /usr/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
        /usr/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/awslogs-agent-setup.py /tmp
-       chmod u+x /tmp/awsogs-agent-setup.py
+       chmod u+x /tmp/awslogs-agent-setup.py
 
   - name: Install cloudwatch log agent
     environment:
