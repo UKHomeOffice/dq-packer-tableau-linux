@@ -113,21 +113,21 @@
     become: true
 
 
-  - name: Download Python 3.7
-    unarchive:
-     src: https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz
-     dest: /usr/src
-     remote_src: yes
-    become: true
+  #- name: Download Python 3.7
+  #  unarchive:
+  #   src: https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz
+  #   dest: /usr/src
+  #   remote_src: yes
+  #  become: true
 
-  - name: Configure, build, test and install Python 3.7
-    shell: |
-      cd /usr/src/Python-3.7.9
-      ./configure --enable-optimizations
-      make
-      make test
-      make install
-    become: true
+  #- name: Configure, build, test and install Python 3.7
+  #  shell: |
+  #    cd /usr/src/Python-3.7.9
+  #    ./configure --enable-optimizations
+  #    make
+  #    make test
+  #    make install
+  #  become: true
 
   - name: Upgrade to latest Pip3
     pip:
@@ -143,7 +143,10 @@
     become: true
 
   - name: GET Tableau files from DQ-config-bucket
-    shell: /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+    shell: |
+      /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+      dnf install -y http://repo.okay.com.mx/centos/8/x86_64/release/okay-release-1-1.noarch.rpm
+      dnf install -y javapackages-filesystem
 
   - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
     dnf:
