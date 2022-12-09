@@ -112,22 +112,6 @@
       - "make"
     become: true
 
-  - name: Download Python 3.7
-    unarchive:
-     src: https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz
-     dest: /usr/src
-     remote_src: yes
-    become: true
-
-  - name: Configure, build, test and install Python 3.7
-    shell: |
-      cd /usr/src/Python-3.7.2
-      ./configure --enable-optimizations
-      make
-      make test
-      make install
-    become: true
-
   - name: Upgrade to latest Pip3
     pip:
       name: pip
