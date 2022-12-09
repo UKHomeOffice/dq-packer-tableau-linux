@@ -148,6 +148,7 @@
   - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
     dnf:
       name:
+        - javapackages-filesystem
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
         - zip
