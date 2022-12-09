@@ -133,13 +133,13 @@
     pip:
       name: pip
       state: latest
-      executable: /usr/local/bin/pip3
+      executable: /usr/bin/pip3
     become: true
 
   - name: Pip Install modules for python3
     pip:
       name: AWSCLI,lxml
-      executable: /usr/local/bin/pip3
+      executable: /usr/bin/pip3
     become: true
 
   - name: GET Tableau files from DQ-config-bucket
