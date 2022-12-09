@@ -142,11 +142,11 @@
       executable: /usr/bin/pip3
     become: true
 
-  - name: Install java-17-openjdk
+  - name: Install java-11-openjdk
     shell: |
       dnf install -y http://repo.okay.com.mx/centos/8/x86_64/release/okay-release-1-1.noarch.rpm
       dnf install -y javapackages-filesystem
-      dnf install -y java-17-openjdk
+      dnf install -y java-11-openjdk
 
   - name: GET Tableau files from DQ-config-bucket
     shell: |
