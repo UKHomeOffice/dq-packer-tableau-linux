@@ -168,11 +168,11 @@
       chmod 755 /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
     become: true
 
-  - name: Download cloudwatch logs agent
-    get_url:
-      url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
-      dest: /tmp/awslogs-agent-setup.py
-      mode: "+x"
+  #- name: Download cloudwatch logs agent
+  #  get_url:
+  #    url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
+  #    dest: /tmp/awslogs-agent-setup.py
+  #    mode: "+x"
 
   - name: GET Cloudwatch logs config from DQ-config-bucket
     shell: |
