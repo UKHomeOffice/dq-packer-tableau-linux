@@ -110,7 +110,6 @@
       - "libffi-devel"
       - "bzip2-devel"
       - "make"
-      - "java-17-openjdk"
     become: true
 
 
@@ -148,11 +147,11 @@
       /usr/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
       dnf install -y http://repo.okay.com.mx/centos/8/x86_64/release/okay-release-1-1.noarch.rpm
       dnf install -y javapackages-filesystem
+      dnf install -y java-17-openjdk
 
   - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
     dnf:
       name:
-        - javapackages-filesystem
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
         - zip
