@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( yum clean packages && yum install -y python38 && sleep 10 && yum module install -y python3* && alternatives --set python /usr/bin/python3 )
+    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python38 && alternatives --set python /usr/bin/python3 )
 
 - name: Build Tableau Linux Server
   hosts: all
