@@ -11,7 +11,7 @@
       "secret_key": "{{user `secret_key`}}",
       "region": "eu-west-2",
       "iam_instance_profile": "packer_builder",
-      "source_ami_id": "ami-0b1d9bd4bad07f54c",
+      "source_ami": "ami-0b1d9bd4bad07f54c",
       "launch_block_device_mappings": [
         {
           "device_name": "/dev/sda1",
