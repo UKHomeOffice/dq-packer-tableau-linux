@@ -11,7 +11,17 @@
       "secret_key": "{{user `secret_key`}}",
       "region": "eu-west-2",
       "iam_instance_profile": "packer_builder",
-      "source_ami": "ami-0b1d9bd4bad07f54c",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "RHEL_HA-8.4.0_HVM-20210504-x86_64-2-Hourly2-GP2",
+          "root-device-type": "ebs"
+        },
+        "owners": [
+          "309956199498"
+        ],
+        "most_recent": true
+      },
       "launch_block_device_mappings": [
         {
           "device_name": "/dev/sda1",
@@ -33,7 +43,7 @@
         }
       ],
       "ssh_username": "ec2-user",
-      "instance_type": "m5.large",
+      "instance_type": "r5d.4xlarge",
       "ami_name": "dq-tableau-linux-{{user `drone_build_number`}}",
       "ami_users": [
         "483846886818",
