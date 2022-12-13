@@ -96,10 +96,19 @@
       gpgcheck: no
     become: true
 
+  - name: DNF Update on perl bugfix
+    shell: |
+       dnf module -y disable freeradius
+       dnf module -y disable perl*
+       dnf remove -y perl-IO-Socket-SSL
+       dnf upgrade --refresh
+       dnf install -y perl-IO-Socket-SSL
+       dnf install -y perl-libwww-perl
+    become: true
+
   - name: DNF Install Dependencies
     dnf: 
      name:
-      - "epel-release"
       - "gcc"
       - "pcre-devel"
       - "openssl-devel"
