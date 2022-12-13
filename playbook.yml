@@ -175,6 +175,12 @@
       chmod 755 /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
     become: true
 
+
+  - name: Enable SELinux in permissive mode
+    ansible.posix.selinux:
+      policy: targeted
+      state: permissive
+
   #- name: Download cloudwatch logs agent
   #  get_url:
   #    url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
