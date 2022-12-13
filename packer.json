@@ -33,6 +33,7 @@
         }
       ],
       "ssh_username": "ec2-user",
+      "ssh-timeout" : "60m",
       "instance_type": "r5d.4xlarge",
       "ami_name": "dq-tableau-linux-{{user `drone_build_number`}}",
       "ami_users": [

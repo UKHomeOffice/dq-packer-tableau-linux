@@ -153,7 +153,6 @@
 
   - name: Install java-11-openjdk
     shell: |
-      dnf install -y http://repo.okay.com.mx/centos/8/x86_64/release/okay-release-1-1.noarch.rpm
       dnf install -y javapackages-filesystem
       dnf install -y java-11-openjdk
 
@@ -161,7 +160,7 @@
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
 
-  - name: Yum Install other packages (Tableau stuff from config_bucket & zip/unzip)
+  - name: DNF Install other packages (Tableau stuff from config_bucket & zip/unzip)
     dnf:
       name:
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
