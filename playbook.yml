@@ -78,7 +78,6 @@
        sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
        dnf update -y
        dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-       setenforce 0
     become: true
 
   - name: Add repositories for RHEL8 Dependencies
@@ -326,7 +325,15 @@
       block: |
         RES_OPTIONS="rotate timeout:1 attempts:1"
 
-  - name: Copy cloudwatch logs starter
+  - name: Copy authorized config
+    copy:
+      src: scripts/pubkey
+      dest: /home/tableau_srv/.ssh/authorized_keys
+      owner: tableau_srv
+      group: tableau_srv
+      mode: 0600
+
+  - name: Copy sshd config
     copy:
       src: scripts/sshd_config
       dest: /etc/ssh/sshd_config
