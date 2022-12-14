@@ -78,6 +78,7 @@
        sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
        dnf update -y
        dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+       setenforce 0
     become: true
 
   - name: Add repositories for RHEL8 Dependencies
@@ -329,22 +330,22 @@
         log_stream_name = {instance_id}
         datetime_format = %Y-%m-%d %H:%M:%S,%f
 
-  - name: Set DNS Resolver Options
-    blockinfile:
-      path: /etc/sysconfig/network
-      block: |
-        RES_OPTIONS="rotate timeout:1 attempts:1"
+#  - name: Set DNS Resolver Options
+#    blockinfile:
+#      path: /etc/sysconfig/network
+#      block: |
+#        RES_OPTIONS="rotate timeout:1 attempts:1"
 
-  - name: Secure sshd_config
-    lineinfile: dest=/etc/ssh/sshd_config
-                regexp="^PermitRootLogin"
-                line="PermitRootLogin no"
-                state=present
-  - lineinfile: dest=/etc/ssh/sshd_config
-                regexp="^PasswordAuthentication"
-                line="PasswordAuthentication no"
-                state=present
-  - lineinfile: dest=/etc/ssh/sshd_config
-                regexp="^X11Forwarding"
-                line="X11Forwarding no"
-                state=present
+#  - name: Secure sshd_config
+#    lineinfile: dest=/etc/ssh/sshd_config
+#                regexp="^PermitRootLogin"
+#                line="PermitRootLogin no"
+#                state=present
+#  - lineinfile: dest=/etc/ssh/sshd_config
+#                regexp="^PasswordAuthentication"
+#                line="PasswordAuthentication no"
+#                state=present
+#  - lineinfile: dest=/etc/ssh/sshd_config
+#                regexp="^X11Forwarding"
+#                line="X11Forwarding no"
+#                state=present
