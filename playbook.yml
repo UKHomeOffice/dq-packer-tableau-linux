@@ -15,20 +15,6 @@
     timezone:
       name: Europe/London
 
-  - name: Create tableau_srv user
-    user:
-      name: tableau_srv
-      groups: wheel
-      append: yes
- 
-  - name: Create .ssh directory for tableau_srv user
-    file:
-      path: /home/tableau_srv/.ssh
-      state: directory
-      mode: 0700
-      owner: tableau_srv
-
-
   - name: Create scripts directory for tableau_srv user c/w all files
     copy:
       src: tableau-scripts/
@@ -324,25 +310,6 @@
       path: /etc/sysconfig/network
       block: |
         RES_OPTIONS="rotate timeout:1 attempts:1"
-
-  - name: Copy authorized config
-    copy:
-      src: scripts/pubkey
-      dest: /home/tableau_srv/.ssh/authorized_keys
-      owner: ec2-user
-      group: ec2-user
-      mode: 0600
-
-  - name: Copy sshd config
-    copy:
-      src: scripts/sshd_config
-      dest: /etc/ssh/sshd_config
-      owner: root
-      group: root
-      mode: 0644
-
-  - name: restart sshd
-    service: name=sshd state=restarted
 
 #  - name: Secure sshd_config
 #    lineinfile: dest=/etc/ssh/sshd_config
