@@ -320,11 +320,22 @@
         log_stream_name = {instance_id}
         datetime_format = %Y-%m-%d %H:%M:%S,%f
 
-#  - name: Set DNS Resolver Options
-#    blockinfile:
-#      path: /etc/sysconfig/network
-#      block: |
-#        RES_OPTIONS="rotate timeout:1 attempts:1"
+  - name: Set DNS Resolver Options
+    blockinfile:
+      path: /etc/sysconfig/network
+      block: |
+        RES_OPTIONS="rotate timeout:1 attempts:1"
+
+  - name: Copy cloudwatch logs starter
+    copy:
+      src: scripts/sshd_config
+      dest: /etc/ssh/sshd_config
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: restart sshd
+    service: name=sshd state=restarted
 
 #  - name: Secure sshd_config
 #    lineinfile: dest=/etc/ssh/sshd_config
