@@ -15,6 +15,32 @@
     timezone:
       name: Europe/London
 
+  - name: determine available users
+    getent:
+       database: passwd
+
+  - name: set fact when tableau_srv does not exists
+    set_fact:
+       user_exists: false
+    when: '"tableau_srv" not in item.key'
+    loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+
+  - name: set user and group tableau_srv when not available
+    user:
+        name: tableau_srv
+        group: tableau_srv
+    when:
+       - not user_exists
+
+  - name: Create .ssh directory for tableau_srv user
+    file:
+      path: /home/tableau_srv/.ssh
+      state: directory
+      mode: 0700
+      owner: tableau_srv
+    when:
+       - not user_exists
+
   - name: Create scripts directory for tableau_srv user c/w all files
     copy:
       src: tableau-scripts/
@@ -147,10 +173,14 @@
   - name: DNF Install other packages (Tableau stuff from config_bucket & zip/unzip)
     dnf:
       name:
-        - /tmp/install/tableau-server-gold-master.x86_64.rpm
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
         - zip
         - unzip
+
+  - name: DNF Install specifically tableau server 
+    dnf:
+      name:
+        - /tmp/install/tableau-server-gold-master.x86_64.rpm
 
   - name: Install the Postgresql & Athena JDBC Driver
     shell: |
@@ -311,16 +341,21 @@
       block: |
         RES_OPTIONS="rotate timeout:1 attempts:1"
 
-#  - name: Secure sshd_config
-#    lineinfile: dest=/etc/ssh/sshd_config
-#                regexp="^PermitRootLogin"
-#                line="PermitRootLogin no"
-#                state=present
-#  - lineinfile: dest=/etc/ssh/sshd_config
-#                regexp="^PasswordAuthentication"
-#                line="PasswordAuthentication no"
-#                state=present
-#  - lineinfile: dest=/etc/ssh/sshd_config
-#                regexp="^X11Forwarding"
-#                line="X11Forwarding no"
-#                state=present
+  - name: DNF Install Tableau server packages
+    dnf:
+      name:
+        - /tmp/install/tableau-server-gold-master.x86_64.rpm
+
+  - name: Secure sshd_config
+    lineinfile: dest=/etc/ssh/sshd_config
+                regexp="^PermitRootLogin"
+                line="PermitRootLogin no"
+                state=present
+  - lineinfile: dest=/etc/ssh/sshd_config
+                regexp="^PasswordAuthentication"
+                line="PasswordAuthentication no"
+                state=present
+  - lineinfile: dest=/etc/ssh/sshd_config
+                regexp="^X11Forwarding"
+                line="X11Forwarding no"
+                state=present
