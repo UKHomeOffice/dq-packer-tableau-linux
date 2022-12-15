@@ -18,12 +18,13 @@
   - name: determine available users
     getent:
        database: passwd
+    register: allusers
 
   - name: set fact when tableau_srv does not exists
     set_fact:
        user_exists: false
     when: '"tableau_srv" not in item.key'
-    loop: "{{ getent_passwd | dict2items }}"
+    loop: "{{ allusers.ansible_facts.getent_passwd | dict2items }}"
 
   - name: set user and group tableau_srv when not available
     user:
