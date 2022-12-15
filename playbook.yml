@@ -18,20 +18,14 @@
   - name: determine available users
     getent:
        database: passwd
-    register: allusers
-
-  - name: set fact when tableau_srv does not exists
-    set_fact:
-       user_exists: false
-    when: '"tableau_srv" not in item.key'
-    loop: "{{ allusers.ansible_facts.getent_passwd | dict2items }}"
+       key: tableau_srv
 
   - name: set user and group tableau_srv when not available
     user:
         name: tableau_srv
         group: tableau_srv
     when:
-       - not user_exists
+       - ansible_facts.getent_passwd[tableau_srv] is not defined
 
   - name: Create .ssh directory for tableau_srv user
     file:
@@ -40,7 +34,7 @@
       mode: 0700
       owner: tableau_srv
     when:
-       - not user_exists
+       - ansible_facts.getent_passwd[tableau_srv] is not defined
 
   - name: Create scripts directory for tableau_srv user c/w all files
     copy:
