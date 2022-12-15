@@ -23,7 +23,7 @@
     set_fact:
        user_exists: false
     when: '"tableau_srv" not in item.key'
-    loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+    loop: "{{ getent_passwd | dict2items }}"
 
   - name: set user and group tableau_srv when not available
     user:
