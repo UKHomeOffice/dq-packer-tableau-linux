@@ -24,8 +24,7 @@
     user:
         name: tableau_srv
         group: tableau_srv
-    when:
-       - ansible_facts.getent_passwd[tableau_srv] is not defined
+    ignore_errors: yes
 
   - name: Create .ssh directory for tableau_srv user
     file:
@@ -33,8 +32,7 @@
       state: directory
       mode: 0700
       owner: tableau_srv
-    when:
-       - ansible_facts.getent_passwd[tableau_srv] is not defined
+    ignore_errors: yes
 
   - name: Create scripts directory for tableau_srv user c/w all files
     copy:
