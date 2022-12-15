@@ -33,7 +33,7 @@
         }
       ],
       "ssh_username": "ec2-user",
-      "instance_type": "m5.large",
+      "instance_type": "m5.4xlarge",
       "ami_name": "dq-tableau-linux-{{user `drone_build_number`}}",
       "ami_users": [
         "483846886818",
