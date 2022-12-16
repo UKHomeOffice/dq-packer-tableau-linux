@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python2)
+    - raw:  test -e /usr/bin/python || ( dnf clean packages)
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -22,6 +22,7 @@
   - name: GET Tableau files from DQ-config-bucket
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+      ln -s -f /usr/bin/python3 /usr/bin/python
 
   - name: DNF Install other packages (Tableau stuff from config_bucket & zip/unzip)
     dnf:
@@ -29,6 +30,8 @@
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
         - zip
         - unzip
+    vars:
+      ansible_python_interpreter: "/usr/bin/python3"   
 
   - name: DNF Install specifically tableau server 
     dnf:
