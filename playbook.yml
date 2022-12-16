@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python3 && alternatives --set python /usr/bin/python3 )
+    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python2)
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -22,17 +22,16 @@
   - name: GET Tableau files from DQ-config-bucket
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
-      dnf install -y python3-dnf
 
   - name: DNF Install other packages (Tableau stuff from config_bucket & zip/unzip)
-    dnf:
+    yum:
       name:
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
         - zip
         - unzip
 
   - name: DNF Install specifically tableau server 
-    dnf:
+    yum:
       name:
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
 
@@ -85,7 +84,7 @@
       mode: "+x"
 
   - name: Install cloudwatch agent (for ec2 alarms)
-    dnf:
+    yum:
       name: /tmp/amazon-cloudwatch-agent.rpm
       state: present
 
