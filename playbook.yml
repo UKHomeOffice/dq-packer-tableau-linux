@@ -26,6 +26,7 @@
   - name: DNF Install other packages (Tableau stuff from config_bucket & zip/unzip)
     dnf:
       name:
+        - python3-dnf
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
         - zip
         - unzip
