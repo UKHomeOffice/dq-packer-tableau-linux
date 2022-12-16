@@ -24,19 +24,6 @@
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
       ln -s -f /usr/bin/python3 /usr/bin/python
 
-  - name: install pip dependencies
-    shell: |
-      pip3 install --upgrade setuptools
-      pip3 install git+https://github.com/pymc-devs/pymc.git --user --use-feature=2020-resolver
- 
-  - name: Add repositories from centos appstream
-    yum_repository:
-      name: centos8-mirror 
-      description: Repo from centos appstream
-      baseurl: http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/
-      gpgcheck: no
-    become: true
-
   - name: DNF Update
     shell: |
        sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
@@ -49,13 +36,7 @@
   - name: DNF Install other packages (Tableau stuff from config_bucket)
     dnf:
       name:
-        - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python"   
-
-  - name: DNF Install specifically tableau server 
-    dnf:
-      name:
+        - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm 
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python"   
