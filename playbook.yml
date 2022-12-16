@@ -45,6 +45,8 @@
     dnf:
       name:
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
+    vars:
+      ansible_python_interpreter: "/usr/libexec/platform-python"   
 
   - name: Install the Postgresql & Athena JDBC Driver
     shell: |
