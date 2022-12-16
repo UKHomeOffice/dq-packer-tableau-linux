@@ -15,16 +15,15 @@
     timezone:
       name: Europe/London
 
-  - name: determine available users
+  - name: Get all users
     getent:
-       database: passwd
-       key: tableau_srv
+      database: passwd
+      split: ':'
 
-  - name: set user and group tableau_srv when not available
+  - name: Create tableau_srv user
     user:
-        name: tableau_srv
-        group: tableau_srv
-    ignore_errors: yes
+      name: tableau_srv
+    when: ( "tableau_srv" not in getent_passwd.keys() ) 
 
   - name: Create .ssh directory for tableau_srv user
     file:
@@ -32,7 +31,7 @@
       state: directory
       mode: 0700
       owner: tableau_srv
-    ignore_errors: yes
+    when: ( "tableau_srv" not in getent_passwd.keys() )
 
   - name: Create scripts directory for tableau_srv user c/w all files
     copy:
@@ -334,10 +333,15 @@
       block: |
         RES_OPTIONS="rotate timeout:1 attempts:1"
 
-  - name: DNF Install Tableau server packages
+  - name: DNF ReInstall Tableau server packages
     dnf:
       name:
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
+
+  - name: Configure permissions for tableau_srv user
+    shell: |
+       touch /var/log/user-data.log && chown tableau_srv:tableau_srv /var/log/user-data.log
+       chown -R tableau_srv:tableau_srv /opt/tableau
 
   - name: Secure sshd_config
     lineinfile: dest=/etc/ssh/sshd_config
