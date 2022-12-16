@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y *libselinux* && dnf install -y zip)
+    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && dnf install -y *libselinux* && dnf install -y zip)
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -24,6 +24,14 @@
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
       ln -s -f /usr/bin/python3 /usr/bin/python
 
+  - name: Add repositories from centos appstream
+    yum_repository:
+      name: centos8-mirror 
+      description: Repo from centos appstream
+      baseurl: http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/
+      gpgcheck: no
+    become: true
+
   - name: DNF Update
     shell: |
        sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
@@ -31,7 +39,6 @@
        dnf clean all && rm -r /var/cache/dnf 
        sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
        dnf update -y
-       dnf install -y bash-completion-1:2.7-5.el8.noarch
     become: true
 
   - name: DNF Install other packages (Tableau stuff from config_bucket)
