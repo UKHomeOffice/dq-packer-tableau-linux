@@ -19,14 +19,6 @@
     shell:
        systemctl enable rc-local.service && systemctl start rc-local.service
 
-  - name: Add line to /etc/hosts
-    lineinfile:
-      state   : present
-      dest    : /etc/hosts
-      line    : '18.130.146.46 rhui.eu-west-2.aws.ce.redhat.com'
-      regexp  : ''
-      insertafter: EOF
-
   - name: DNF Update
     shell: |
        sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
