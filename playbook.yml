@@ -31,7 +31,7 @@
         - zip
         - unzip
     vars:
-      ansible_python_interpreter: "/usr/bin/python3"   
+      ansible_python_interpreter: "/usr/libexec/platform-python"   
 
   - name: DNF Install specifically tableau server 
     dnf:
