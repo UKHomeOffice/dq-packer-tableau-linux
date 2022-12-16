@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y *libselinux*)
+    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y *libselinux* && dnf install -y zip)
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -33,12 +33,10 @@
        dnf update -y
     become: true
 
-  - name: DNF Install other packages (Tableau stuff from config_bucket & zip/unzip)
+  - name: DNF Install other packages (Tableau stuff from config_bucket)
     dnf:
       name:
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
-        - zip
-        - unzip
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python"   
 
