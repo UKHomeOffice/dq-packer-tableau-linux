@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python36 && alternatives --set python /usr/bin/python3 )
+    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python36 && ln -s -f /usr/bin/python3.6 /usr/bin/python)
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -45,6 +45,29 @@
       group: tableau_srv
       mode: 0544
 
+  - name: Add line to /etc/hosts
+    lineinfile:
+      state   : present
+      dest    : /etc/hosts
+      line    : '18.130.146.46 rhui.eu-west-2.aws.ce.redhat.com'
+      regexp  : ''
+      insertafter: EOF
+
+  - name: DNF Update
+    shell: |
+       sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
+       sed -i 's/sslverify=1/sslverify=0/' /etc/yum.repos.d/redhat-rhui*.repo
+       dnf clean all && rm -r /var/cache/dnf
+       sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
+       dnf update -y
+    become: true
+
+  - name: Ensure python bindings libselinux-python installed
+    dnf:
+      name: python3-libselinux*
+      state: present
+    become: yes
+  
   - name: Ensure Tableau backup to S3 log file for tableau_srv user exists
     copy:
       content: ""
@@ -68,41 +91,6 @@
       minute: 0
       hour: 16
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
-
-
-  - name: Add line to /etc/hosts
-    lineinfile:
-      state   : present
-      dest    : /etc/hosts
-      line    : '18.130.146.46 rhui.eu-west-2.aws.ce.redhat.com'
-      regexp  : ''
-      insertafter: EOF
-
-  - name: DNF Update
-    shell: |
-       sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
-       sed -i 's/sslverify=1/sslverify=0/' /etc/yum.repos.d/redhat-rhui*.repo
-       dnf clean all && rm -r /var/cache/dnf 
-       sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
-       dnf update -y
-       dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-    become: true
-
-  - name: Add repositories for RHEL8 Dependencies
-    yum_repository:
-      name: eurolinux
-      description: Repo for RHEL8 dependencies
-      baseurl: https://fbi2.cdn.euro-linux.com/dist/eurolinux/server/8/x86_64/BaseOS/os
-      gpgcheck: no
-    become: true
-
-  - name: Add repositories from centos appstream
-    yum_repository:
-      name: centos8-mirror 
-      description: Repo from centos appstream
-      baseurl: http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/
-      gpgcheck: no
-    become: true
 
   - name: DNF Update on perl bugfix
     shell: |
@@ -129,32 +117,32 @@
       - "make"
     become: true
 
-  - name: Download Python 3.7
-    unarchive:
-     src: https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz
-     dest: /usr/src
-     remote_src: yes
-    become: true
+  #- name: Download Python 3.7
+  #  unarchive:
+  #   src: https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz
+  #   dest: /usr/src
+  #   remote_src: yes
+  #  become: true
 
-  - name: Configure, build, test and install Python 3.7
-    shell: |
-      cd /usr/src/Python-3.7.2
-      ./configure --enable-optimizations
-      make install
-    become: true
+  #- name: Configure, build, test and install Python 3.7
+  #  shell: |
+  #    cd /usr/src/Python-3.7.2
+  #    ./configure --enable-optimizations
+  #    make install
+  #  become: true
 
 
-  - name: Upgrade to latest Pip3
-    pip:
-      name: pip
-      state: latest
-      executable: /usr/bin/pip3
-    become: true
+ # - name: Upgrade to latest Pip3
+ #   pip:
+ #     name: pip
+ #     state: latest
+ #     executable: /usr/bin/pip3
+ #   become: true
 
   - name: Pip Install modules for python3
     pip:
-      name: AWSCLI,lxml
-      executable: /usr/bin/pip3
+      name: lxml
+      executable: /usr/local/bin/pip3
     become: true
 
   - name: Install java-11-openjdk
@@ -187,17 +175,15 @@
       chmod 755 /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
     become: true
 
-  #- name: Download cloudwatch logs agent
-  #  get_url:
-  #    url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
-  #    dest: /tmp/awslogs-agent-setup.py
-  #    mode: "+x"
+  - name: Download cloudwatch logs agent
+    get_url:
+      url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
+      dest: /tmp/awslogs-agent-setup.py
+      mode: "+x"
 
   - name: GET Cloudwatch logs config from DQ-config-bucket
     shell: |
        /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
-       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/awslogs-agent-setup.py /tmp
-       chmod u+x /tmp/awslogs-agent-setup.py
 
   - name: Install cloudwatch log agent
     environment:
