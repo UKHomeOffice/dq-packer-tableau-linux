@@ -84,6 +84,15 @@
       regexp  : ''
       insertafter: EOF
 
+  - name: DNF Update
+    shell: |
+       sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
+       sed -i 's/sslverify=1/sslverify=0/' /etc/yum.repos.d/redhat-rhui*.repo
+       dnf clean all && rm -r /var/cache/dnf 
+       sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
+       dnf update -y
+    become: true
+
   - name: DNF Update on perl bugfix
     shell: |
        dnf module -y disable freeradius
