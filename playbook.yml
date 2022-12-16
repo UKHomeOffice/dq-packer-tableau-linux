@@ -46,7 +46,7 @@
       mode: 0544
 
   - name: Ensure python bindings libselinux-python installed
-    dnf:
+    yum:
       name: libselinux-python3
       state: present
       update_cache: true 
