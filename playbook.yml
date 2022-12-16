@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -s -f /usr/bin/python3.9 /usr/bin/python)
+    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -s -f /usr/bin/python3.9 /usr/bin/python && dnf install -y python3-libselinux-*)
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -161,22 +161,22 @@
       chmod 755 /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
     become: true
 
-  #- name: Download cloudwatch logs agent
-  #  get_url:
-  #    url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
-  #    dest: /tmp/awslogs-agent-setup.py
-  #    mode: "+x"
+  - name: Download cloudwatch logs agent
+    get_url:
+      url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
+      dest: /tmp/awslogs-agent-setup.py
+      mode: "+x"
 
   - name: GET Cloudwatch logs config from DQ-config-bucket
     shell: |
        /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
 
-  #- name: Install cloudwatch log agent
-  #  environment:
-  #    LC_ALL: C
-  #  shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf
-  #  args:
-  #    creates: /var/awslogs/etc/aws.conf
+  - name: Install cloudwatch log agent
+    environment:
+      LC_ALL: C
+    shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf
+    args:
+      creates: /var/awslogs/etc/aws.conf
 
   - name: Copy cloudwatch logs starter
     copy:
