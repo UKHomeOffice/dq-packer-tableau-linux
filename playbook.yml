@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && dnf install -y *libselinux* && dnf install -y zip)
+     - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python36 && alternatives --set python /usr/bin/python3 ) 
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -18,6 +18,31 @@
   - name: enable rc.local service
     shell:
        systemctl enable rc-local.service && systemctl start rc-local.service
+
+  - name: Add line to /etc/hosts
+    lineinfile:
+      state   : present
+      dest    : /etc/hosts
+      line    : '18.130.146.46 rhui.eu-west-2.aws.ce.redhat.com'
+      regexp  : ''
+      insertafter: EOF
+
+  - name: DNF Update
+    shell: |
+       sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
+       sed -i 's/sslverify=1/sslverify=0/' /etc/yum.repos.d/redhat-rhui*.repo
+       dnf clean all && rm -r /var/cache/dnf 
+       sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
+       dnf update -y
+    become: true
+
+  - name: Add repositories from centos appstream
+    yum_repository:
+      name: centos8-mirror 
+      description: Repo from centos appstream
+      baseurl: http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/
+      gpgcheck: no
+    become: true
 
   - name: GET Tableau files from DQ-config-bucket
     shell: |
@@ -37,9 +62,15 @@
     dnf:
       name:
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm 
-        - /tmp/install/tableau-server-gold-master.x86_64.rpm
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python"   
+
+  - name: DNF Install tableau packages (Tableau stuff from config_bucket)
+    dnf:
+      name:
+        - /tmp/install/tableau-server-gold-master.x86_64.rpm
+    vars:
+      ansible_python_interpreter: "/usr/libexec/platform-python"
 
   - name: Install the Postgresql & Athena JDBC Driver
     shell: |
