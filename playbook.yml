@@ -46,8 +46,10 @@
       mode: 0544
 
   - name: Ensure python bindings libselinux-python installed
-    shell: 
-      dnf install -y libselinux-python3
+    dnf:
+      name: libselinux-python3
+      state: present
+      update_cache: true 
     become: yes
   
   - name: Ensure Tableau backup to S3 log file for tableau_srv user exists
