@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages)
+    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y *libselinux*)
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -23,14 +23,6 @@
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
       ln -s -f /usr/bin/python3 /usr/bin/python
-
-  - name: Add line to /etc/hosts
-    lineinfile:
-      state   : present
-      dest    : /etc/hosts
-      line    : '18.130.146.46 rhui.eu-west-2.aws.ce.redhat.com'
-      regexp  : ''
-      insertafter: EOF
 
   - name: DNF Update
     shell: |
