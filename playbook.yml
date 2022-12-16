@@ -64,7 +64,7 @@
 
   - name: Ensure python bindings libselinux-python installed
     dnf:
-      name: libselinux-python3
+      name: python3-libselinux*
       state: present
     become: yes
   
