@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -s -f /usr/bin/python3.9 /usr/bin/python && dnf install -y python3-libselinux-*)
+    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -s -f /usr/bin/python3.9 /usr/bin/python)
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -45,6 +45,11 @@
       group: tableau_srv
       mode: 0544
 
+  - name: Ensure python bindings libselinux-python installed
+    shell: 
+      dnf install -y libselinux-python3
+    become: yes
+  
   - name: Ensure Tableau backup to S3 log file for tableau_srv user exists
     copy:
       content: ""
