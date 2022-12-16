@@ -24,6 +24,11 @@
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
       ln -s -f /usr/bin/python3 /usr/bin/python
 
+  - name: install pip dependencies
+    shell: |
+      pip3 install --upgrade setuptools
+      pip3 install git+https://github.com/pymc-devs/pymc.git --user --use-feature=2020-resolver
+ 
   - name: Add repositories from centos appstream
     yum_repository:
       name: centos8-mirror 
