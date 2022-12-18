@@ -35,8 +35,6 @@
     dnf:
       name:
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
-        - zip
-        - unzip
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python"   
 
