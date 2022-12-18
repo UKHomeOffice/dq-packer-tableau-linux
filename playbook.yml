@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python36 && ln -s -f /usr/bin/python3.6 /usr/bin/python)
+    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -s -f /usr/bin/python3.9 /usr/bin/python)
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -27,7 +27,7 @@
 
   - name: GET Tableau files from DQ-config-bucket
     shell: |
-      /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+      ln -s -f /usr/bin/python3.9 /usr/bin/python && /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
 
   - name: DNF Install other packages (Tableau stuff from config_bucket & zip/unzip)
     dnf:
