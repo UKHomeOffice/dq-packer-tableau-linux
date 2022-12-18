@@ -38,14 +38,14 @@
         - zip
         - unzip
     vars:
-      ansible_python_interpreter: "/usr/bin/python3"   
+      ansible_python_interpreter: "/usr/libexec/platform-python"   
 
   - name: DNF Install specifically tableau server 
     dnf:
       name:
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
     vars:
-      ansible_python_interpreter: "/usr/bin/python3"   
+      ansible_python_interpreter: "/usr/libexec/platform-python"   
 
   - name: Install the Postgresql & Athena JDBC Driver
     shell: |
