@@ -19,6 +19,21 @@
     shell:
        systemctl enable rc-local.service && systemctl start rc-local.service
 
+  - name: DNF Update
+    shell: |
+       sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
+       sed -i 's/sslverify=1/sslverify=0/' /etc/yum.repos.d/redhat-rhui*.repo
+       dnf clean all && rm -r /var/cache/dnf
+       sed -i '2s/.*/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
+       dnf update -y
+    become: true
+
+  - name: Ensure python bindings libselinux-python installed
+    dnf:
+      name: python3-libselinux*
+      state: present
+    become: yes
+
   - name: GET Tableau files from DQ-config-bucket
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
