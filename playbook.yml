@@ -25,12 +25,6 @@
        dnf update -y
     become: true
 
-  - name: Ensure python bindings libselinux-python installed
-    dnf:
-      name: python3-libselinux*
-      state: present
-    become: yes
-
   - name: GET Tableau files from DQ-config-bucket
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
