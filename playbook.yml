@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages)
+    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python36 && ln -s -f /usr/bin/python3.6 /usr/bin/python)
 
 - name: Build Tableau Linux Server
   hosts: all
