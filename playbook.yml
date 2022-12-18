@@ -27,7 +27,9 @@
 
   - name: GET Tableau files from DQ-config-bucket
     shell: |
-      ln -s -f /usr/bin/python3.9 /usr/bin/python && /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+      /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
+    vars:
+      ansible_python_interpreter: "/usr/bin/python3"   
 
   - name: DNF Install other packages (Tableau stuff from config_bucket & zip/unzip)
     dnf:
@@ -36,12 +38,14 @@
         - zip
         - unzip
     vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python"   
+      ansible_python_interpreter: "/usr/bin/python3"   
 
   - name: DNF Install specifically tableau server 
     dnf:
       name:
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
+    vars:
+      ansible_python_interpreter: "/usr/bin/python3"   
 
   - name: Install the Postgresql & Athena JDBC Driver
     shell: |
