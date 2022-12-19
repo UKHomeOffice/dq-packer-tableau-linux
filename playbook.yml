@@ -233,9 +233,9 @@
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python" 
 
- - name: Disabling SELinux state
-   selinux:
-     state: disabled
+  - name: Disabling SELinux state
+    selinux:
+      state: disabled
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python" 
 
@@ -254,3 +254,4 @@
                 state=present
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python" 
+
