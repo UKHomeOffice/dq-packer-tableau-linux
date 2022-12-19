@@ -228,8 +228,6 @@
     shell: |
        touch /var/log/user-data.log && chown tableau_srv:tableau_srv /var/log/user-data.log
        chown -R tableau_srv:tableau_srv /opt/tableau
-       touch /usr/lib64/python2.6/site-packages/selinux/__init__.py 
-       chmod 644 /usr/lib64/python2.6/site-packages/selinux/__init__.py
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python" 
 
