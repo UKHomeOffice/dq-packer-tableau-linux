@@ -233,15 +233,11 @@
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python" 
 
- - name: File created to avoid selinux interpreation for ansible
-    copy:
-      dest: /usr/lib64/python2.6/site-packages/selinux/__init__.py
-      content: |
-        def is_selinux_enabled():
-          return False
-
-        def is_selinux_mls_enabled():
-          return False
+ - name: Disabling SELinux state
+   selinux:
+     state: disabled
+    vars:
+      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
   - name: Secure sshd_config
     lineinfile: dest=/etc/ssh/sshd_config
