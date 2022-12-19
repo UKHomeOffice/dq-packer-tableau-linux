@@ -228,8 +228,20 @@
     shell: |
        touch /var/log/user-data.log && chown tableau_srv:tableau_srv /var/log/user-data.log
        chown -R tableau_srv:tableau_srv /opt/tableau
+       touch /usr/lib64/python2.6/site-packages/selinux/__init__.py 
+       chmod 644 /usr/lib64/python2.6/site-packages/selinux/__init__.py
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python" 
+
+ - name: File created to avoid selinux interpreation for ansible
+    copy:
+      dest: /usr/lib64/python2.6/site-packages/selinux/__init__.py
+      content: |
+        def is_selinux_enabled():
+          return False
+
+        def is_selinux_mls_enabled():
+          return False
 
   - name: Secure sshd_config
     lineinfile: dest=/etc/ssh/sshd_config
