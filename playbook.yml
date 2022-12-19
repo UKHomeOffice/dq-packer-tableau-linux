@@ -231,9 +231,8 @@
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: Disabling SELinux state
-    selinux:
-      state: disabled
+  - name: install selinux bindings
+    dnf: name=libselinux-python state=present
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python" 
 
