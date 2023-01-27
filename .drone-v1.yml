@@ -142,9 +142,11 @@ steps:
     - export VAULT_ADDR=$${VAULT_ADDR_PROD}
     - vault token renew > /dev/null
     # Renew CI Drone Vault Token
+    - set -xv && export VAULT_ADDR=$${VAULT_ADDR_SIT} 
     - export VAULT_TOKEN=$${VAULT_TOKEN_SIT}
     - export VAULT_ADDR=$${VAULT_ADDR_SIT}
     - vault token renew > /dev/null    
+    - set -xv && export VAULT_ADDR=$${VAULT_TOKEN_SIT} 
   environment:
     VAULT_ADDR_NOTPROD:
       from_secret: VAULT_ADDR_NOTPROD
@@ -160,7 +162,5 @@ steps:
       from_secret: VAULT_TOKEN_SIT 
   when:
     event:
-      - cron
-    cron:
-      - renew-vault-tokens
+      - push
 ...
