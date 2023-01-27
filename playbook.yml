@@ -19,6 +19,11 @@
     shell:
        systemctl enable rc-local.service && systemctl start rc-local.service
 
+
+  - name: perform repo sed replace
+    shell:
+       sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
+
   - name: GET Tableau files from DQ-config-bucket
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
