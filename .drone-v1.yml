@@ -162,5 +162,7 @@ steps:
       from_secret: VAULT_TOKEN_SIT 
   when:
     event:
-      - push
+      - cron
+    cron:
+      - renew-vault-tokens
 ...
