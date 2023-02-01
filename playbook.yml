@@ -19,11 +19,10 @@
     shell:
        systemctl enable rc-local.service && systemctl start rc-local.service
 
-  - name: DNF Update
-    shell: |
+
+  - name: perform repo sed replace
+    shell:
        sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
-       dnf update -y
-    become: true
 
   - name: GET Tableau files from DQ-config-bucket
     shell: |

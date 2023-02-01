@@ -142,6 +142,7 @@ steps:
     - export VAULT_ADDR=$${VAULT_ADDR_PROD}
     - vault token renew > /dev/null
     # Renew CI Drone Vault Token
+    - export VAULT_ADDR=$${VAULT_ADDR_SIT} 
     - export VAULT_TOKEN=$${VAULT_TOKEN_SIT}
     - export VAULT_ADDR=$${VAULT_ADDR_SIT}
     - vault token renew > /dev/null    
