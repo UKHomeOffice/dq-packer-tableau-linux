@@ -4,7 +4,7 @@
   gather_facts: false
   become: yes
   pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -s -f /usr/bin/python3.9 /usr/bin/python)
+    - raw: test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -s -f /usr/bin/python3.9 /usr/bin/python)
 
 - name: Build Tableau Linux Server
   hosts: all
@@ -19,7 +19,6 @@
     shell:
        systemctl enable rc-local.service && systemctl start rc-local.service
 
-
   - name: perform repo sed replace
     shell:
        sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
@@ -29,6 +28,50 @@
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python" 
+
+  - name: Create tableau_srv user
+    user:
+      name: tableau_srv
+
+  - name: Create .ssh directory for tableau_srv user
+    file:
+      path: /home/tableau_srv/.ssh
+      state: directory
+      mode: 0700
+      owner: tableau_srv
+
+
+  - name: Create scripts directory for tableau_srv user c/w all files
+    copy:
+      src: tableau-scripts/
+      dest: /home/tableau_srv/scripts
+      owner: tableau_srv
+      group: tableau_srv
+      mode: 0555
+
+  - name: Ensure Tableau backup to S3 log file for tableau_srv user exists
+    copy:
+      content: ""
+      dest: /var/log/tableau-backup-to-s3.log
+      force: no
+      owner: tableau_srv
+      group: tableau_srv
+      mode: 0644
+
+  - name: Create directory for old Tableau backup files for tableau_srv user
+    file:
+      path: /var/log/tableau-backup-logs
+      state: directory
+      mode: 0755
+      owner: tableau_srv
+
+  - name: Create cronjob to run script to backup Tableau to S3 every day at 8am
+    cron:
+      name: Tableau to S3 backup
+      user: tableau_srv
+      minute: 0
+      hour: 8
+      job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
   - name: DNF Install other packages (Tableau stuff from config_bucket & zip/unzip)
     dnf:
