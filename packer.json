@@ -11,7 +11,16 @@
       "secret_key": "{{user `secret_key`}}",
       "region": "eu-west-2",
       "iam_instance_profile": "packer_builder",
-      "source_ami": "ami-04a91e364a7636093",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "cloudimg-redhat8*"
+        },
+        "owners": [
+          "679593333241"
+        ],
+        "most_recent": true
+      },
       "launch_block_device_mappings": [
         {
           "device_name": "/dev/sda1",
