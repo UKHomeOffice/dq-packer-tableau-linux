@@ -6,10 +6,17 @@
   pre_tasks:
     - raw: test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -s -f /usr/bin/python3.9 /usr/bin/python)
 
-- name: TEMP CODE - Find python-like files in /usr/bin
-  find:
-    paths: /usr/bin
-    patterns: 'py*'
+- name: TEMP CODE - Output python-like files in /usr/bin
+  hosts: all
+  tasks:
+    - name: find python-like files
+      find:
+        paths: /usr/bin
+        patterns: 'py*'
+      register: output
+
+    - debug: var=item.path
+      with_items: "{{ output.files }}"
 
 - name: Build Tableau Linux Server
   hosts: all
