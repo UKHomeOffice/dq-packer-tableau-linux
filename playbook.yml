@@ -13,6 +13,7 @@
       find:
         paths: /usr/bin
         patterns: 'py*'
+        file_type: any
       register: output
 
     - debug: var=item.path
