@@ -2,9 +2,14 @@
 - name: Pre-reqs for ansible to run
   hosts: all
   gather_facts: false
-  become: yes
+  become: true
   pre_tasks:
     - raw: test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -s -f /usr/bin/python3.9 /usr/bin/python)
+
+- name: TEMP CODE - Find python-like files in /usr/bin
+  ansible.builtin.find:
+    paths: /usr/bin
+    patterns: 'py*'
 
 - name: Build Tableau Linux Server
   hosts: all
