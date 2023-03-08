@@ -7,7 +7,7 @@
     - raw: test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -s -f /usr/bin/python3.9 /usr/bin/python)
 
 - name: TEMP CODE - Find python-like files in /usr/bin
-  ansible.builtin.find:
+  find:
     paths: /usr/bin
     patterns: 'py*'
 
