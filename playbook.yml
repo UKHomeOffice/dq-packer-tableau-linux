@@ -39,8 +39,6 @@
   - name: GET Tableau files from DQ-config-bucket
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
   - name: Create tableau_srv user
     user:
@@ -90,6 +88,7 @@
     dnf:
       name:
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
+      disable_gpg_check: true
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python" 
 
@@ -97,8 +96,7 @@
     dnf:
       name:
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
+      disable_gpg_check: true
 
   - name: Install the Postgresql & Athena JDBC Driver
     shell: |
@@ -108,8 +106,6 @@
       chmod 755 /opt/tableau/tableau_driver/jdbc/postgresql-42.2.14.jar
       chmod 755 /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
     become: true
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
   #- name: Download cloudwatch logs agent
   #  get_url:
