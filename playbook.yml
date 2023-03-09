@@ -6,19 +6,6 @@
   pre_tasks:
     - raw: test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -f /usr/bin/python3.9 /usr/bin/python )
 
-- name: TEMP CODE - Output python-like files in /usr/bin
-  hosts: all
-  tasks:
-    - name: find python-like files
-      find:
-        paths: /usr/bin
-        patterns: 'py*'
-        file_type: any
-      register: output
-
-    - debug: var=item.path
-      with_items: "{{ output.files }}"
-
 - name: Build Tableau Linux Server
   hosts: all
   become: true
@@ -84,15 +71,13 @@
       hour: 8
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
-  - name: DNF Install other packages (Tableau stuff from config_bucket & zip/unzip)
+  - name: DNF Install Tableau - Tab CMD
     dnf:
       name:
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
       disable_gpg_check: true
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: DNF Install specifically tableau server 
+  - name: DNF Install Tableau - Tableau Server
     dnf:
       name:
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
@@ -107,63 +92,52 @@
       chmod 755 /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
     become: true
 
-  #- name: Download cloudwatch logs agent
+  #- name: Download CloudWatch logs agent
   #  get_url:
   #    url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
   #    dest: /tmp/awslogs-agent-setup.py
   #    mode: "+x"
 
-  - name: GET Cloudwatch logs config from DQ-config-bucket
+  - name: GET CloudWatch logs config from DQ-config-bucket
     shell: |
        /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
        /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/awslogs-agent-setup.py /tmp
        chmod u+x /tmp/awslogs-agent-setup.py
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: Install cloudwatch log agent
+  - name: Install CloudWatch log agent
     environment:
       LC_ALL: C
     shell: ln -s -f /usr/bin/python3.9 /usr/bin/python && /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf
     args:
       creates: /var/awslogs/etc/aws.conf
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: Copy cloudwatch logs starter
+  - name: Copy CloudWatch logs starter
     copy:
       src: scripts/startcloudwatchlogs.sh
       dest: /usr/bin/startcloudwatchlogs.sh
       owner: root
       group: root
       mode: 0755
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
   - name: Make Cron Job to start awslogs with right region
     cron:
       name: Start awslogs
       special_time: reboot
       job: /usr/bin/startcloudwatchlogs.sh
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: Download cloudwatch agent (for ec2 alarms)
+  - name: Download CloudWatch agent (for ec2 alarms)
     get_url:
-      url: https://s3.amazonaws.com/amazoncloudwatch-agent/centos/amd64/latest/amazon-cloudwatch-agent.rpm
+      url: https://s3.amazonaws.com/amazoncloudwatch-agent/redhat/amd64/latest/amazon-cloudwatch-agent.rpm
       dest: /tmp/amazon-cloudwatch-agent.rpm
       mode: "+x"
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: Install cloudwatch agent (for ec2 alarms)
+  - name: Install CloudWatch agent (for ec2 alarms)
     dnf:
       name: /tmp/amazon-cloudwatch-agent.rpm
       state: present
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
+      disable_gpg_check: true
 
-  - name: Cloudwatch Agent config
+  - name: CloudWatch Agent config
     copy:
       dest: /opt/aws/amazon-cloudwatch-agent/bin/config.json
       content: |
@@ -223,7 +197,7 @@
     vars:
       ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: Cloudwatch logs config
+  - name: CloudWatch logs config
     copy:
       dest: /tmp/cwlogs.conf
       content: |
