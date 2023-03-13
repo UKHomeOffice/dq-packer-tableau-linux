@@ -14,7 +14,7 @@ platform:
 
 x-anchors:
   retrieve-deployment-aws-key: &retrieve-deployment-aws-key
-    # Retrive vault secrets
+    # Retrieve vault secrets
     - vault read aws_dacc_dq/creds/drone > aws_creds.json
     - export LEASE_ID=$(cat aws_creds.json | grep lease_id | awk -F ' ' '{print $2}')
     # Update the token TTL to 10mins
