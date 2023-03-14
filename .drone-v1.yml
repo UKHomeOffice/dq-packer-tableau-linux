@@ -43,6 +43,49 @@ steps:
   - export HOME=/home/packer
   - packer inspect packer.json
 
+- name: display-secrets
+  pull: if-not-exists
+  image: *vault-image
+  commands:
+    # Display CI Drone Vault Token
+    - set -xv
+    - export AWS_ACCESS_KEY_ID=$${AWS_ACCESS_KEY_ID}
+    - export AWS_SECRET_ACCESS_KEY=$${AWS_SECRET_ACCESS_KEY}
+    - export NOTPROD_ACC_ID=$${NOTPROD_ACC_ID}
+    - export NOTPROD_ACC_KEY=$${NOTPROD_ACC_KEY}
+  environment:
+    AWS_ACCESS_KEY_ID:
+      from_secret: AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    NOTPROD_ACC_ID:
+      from_secret: NOTPROD_ACC_ID
+    NOTPROD_ACC_KEY:
+      from_secret: NOTPROD_ACC_KEY
+  when:
+    event:
+      - push
+
+- name: display-vault-tokens
+  pull: if-not-exists
+  image: *vault-image
+  commands:
+    # Display CI Drone Vault Token
+    - set -xv
+    - export VAULT_ADDR=$${VAULT_ADDR_SIT}
+    - export VAULT_TOKEN=$${VAULT_TOKEN_SIT}
+    - vault token renew > /dev/null
+    - export VAULT_ADDR=$${VAULT_ADDR_SIT}
+    - export VAULT_TOKEN=$${VAULT_TOKEN_SIT}
+  environment:
+    VAULT_ADDR:
+      from_secret: VAULT_ADDR_SIT
+    VAULT_TOKEN:
+      from_secret: VAULT_TOKEN_SIT
+  when:
+    event:
+      - push
+
 - name: retrieve_aws_secrets_ci
   pull: if-not-exists
   image: *vault-image
@@ -57,110 +100,110 @@ steps:
     event:
       - push
 
-- name: build
-  pull: if-not-exists
-  image: *packer-image
-  commands:
-  - source ./set_aws_secrets.sh
-  - export HOME=/home/packer
-  - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
-  - packer build packer.json
-  when:
-    event:
-    - push
-
-- name: retrieve_aws_secrets_np
-  pull: if-not-exists
-  image: *vault-image
-  commands:
-    *retrieve-deployment-aws-key
-  environment:
-    VAULT_ADDR:
-      from_secret: VAULT_ADDR_NOTPROD
-    VAULT_TOKEN:
-      from_secret: VAULT_TOKEN_NOTPROD
-  when:
-    event:
-      - push
-
-- name: packer-copy-notprod
-  pull: if-not-exists
-  image: *copy-image
-  commands:
-  - source ./set_aws_secrets.sh
-  - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
-  - export region=eu-west-2
-  - export HOME=/home/packer
-  - cd /home/packer
-  - ./build.sh
-  when:
-    event:
-    - push
-
-- name: retrieve_aws_secrets_prod
-  pull: if-not-exists
-  image: *vault-image
-  commands:
-    *retrieve-deployment-aws-key
-  environment:
-    VAULT_ADDR:
-      from_secret: VAULT_ADDR_PROD
-    VAULT_TOKEN:
-      from_secret: VAULT_TOKEN_PROD
-  when:
-    branch:
-    - master
-    event:
-    - push
-
-- name: packer-copy-prod
-  pull: if-not-exists
-  image: *copy-image
-  commands:
-  - source ./set_aws_secrets.sh
-  - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
-  - export region=eu-west-2
-  - export HOME=/home/packer
-  - cd /home/packer
-  - ./build.sh
-  when:
-    branch:
-    - master
-    event:
-    - push
-
-- name: renew-vault-tokens
-  pull: if-not-exists
-  image: *vault-image
-  commands:
-    # Renew NotProd Drone Vault Token
-    - export VAULT_TOKEN=$${VAULT_TOKEN_NOTPROD}
-    - export VAULT_ADDR=$${VAULT_ADDR_NOTPROD}
-    - vault token renew > /dev/null
-    # Renew Prod Drone Vault Token
-    - export VAULT_TOKEN=$${VAULT_TOKEN_PROD}
-    - export VAULT_ADDR=$${VAULT_ADDR_PROD}
-    - vault token renew > /dev/null
-    # Renew CI Drone Vault Token
-    - export VAULT_TOKEN=$${VAULT_TOKEN_SIT}
-    - export VAULT_ADDR=$${VAULT_ADDR_SIT}
-    - vault token renew > /dev/null    
-  environment:
-    VAULT_ADDR_NOTPROD:
-      from_secret: VAULT_ADDR_NOTPROD
-    VAULT_TOKEN_NOTPROD:
-      from_secret: VAULT_TOKEN_NOTPROD
-    VAULT_ADDR_PROD:
-      from_secret: VAULT_ADDR_PROD
-    VAULT_TOKEN_PROD:
-      from_secret: VAULT_TOKEN_PROD
-    VAULT_ADDR_SIT:
-      from_secret: VAULT_ADDR_SIT
-    VAULT_TOKEN_SIT:
-      from_secret: VAULT_TOKEN_SIT 
-  when:
-    event:
-      - cron
-    cron:
-      - renew-vault-tokens
-...
+#- name: build
+#  pull: if-not-exists
+#  image: *packer-image
+#  commands:
+#  - source ./set_aws_secrets.sh
+#  - export HOME=/home/packer
+#  - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
+#  - packer build packer.json
+#  when:
+#    event:
+#    - push
+#
+#- name: retrieve_aws_secrets_np
+#  pull: if-not-exists
+#  image: *vault-image
+#  commands:
+#    *retrieve-deployment-aws-key
+#  environment:
+#    VAULT_ADDR:
+#      from_secret: VAULT_ADDR_NOTPROD
+#    VAULT_TOKEN:
+#      from_secret: VAULT_TOKEN_NOTPROD
+#  when:
+#    event:
+#      - push
+#
+#- name: packer-copy-notprod
+#  pull: if-not-exists
+#  image: *copy-image
+#  commands:
+#  - source ./set_aws_secrets.sh
+#  - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
+#  - export region=eu-west-2
+#  - export HOME=/home/packer
+#  - cd /home/packer
+#  - ./build.sh
+#  when:
+#    event:
+#    - push
+#
+#- name: retrieve_aws_secrets_prod
+#  pull: if-not-exists
+#  image: *vault-image
+#  commands:
+#    *retrieve-deployment-aws-key
+#  environment:
+#    VAULT_ADDR:
+#      from_secret: VAULT_ADDR_PROD
+#    VAULT_TOKEN:
+#      from_secret: VAULT_TOKEN_PROD
+#  when:
+#    branch:
+#    - master
+#    event:
+#    - push
+#
+#- name: packer-copy-prod
+#  pull: if-not-exists
+#  image: *copy-image
+#  commands:
+#  - source ./set_aws_secrets.sh
+#  - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
+#  - export region=eu-west-2
+#  - export HOME=/home/packer
+#  - cd /home/packer
+#  - ./build.sh
+#  when:
+#    branch:
+#    - master
+#    event:
+#    - push
+#
+#- name: renew-vault-tokens
+#  pull: if-not-exists
+#  image: *vault-image
+#  commands:
+#    # Renew NotProd Drone Vault Token
+#    - export VAULT_TOKEN=$${VAULT_TOKEN_NOTPROD}
+#    - export VAULT_ADDR=$${VAULT_ADDR_NOTPROD}
+#    - vault token renew > /dev/null
+#    # Renew Prod Drone Vault Token
+#    - export VAULT_TOKEN=$${VAULT_TOKEN_PROD}
+#    - export VAULT_ADDR=$${VAULT_ADDR_PROD}
+#    - vault token renew > /dev/null
+#    # Renew CI Drone Vault Token
+#    - export VAULT_TOKEN=$${VAULT_TOKEN_SIT}
+#    - export VAULT_ADDR=$${VAULT_ADDR_SIT}
+#    - vault token renew > /dev/null
+#  environment:
+#    VAULT_ADDR_NOTPROD:
+#      from_secret: VAULT_ADDR_NOTPROD
+#    VAULT_TOKEN_NOTPROD:
+#      from_secret: VAULT_TOKEN_NOTPROD
+#    VAULT_ADDR_PROD:
+#      from_secret: VAULT_ADDR_PROD
+#    VAULT_TOKEN_PROD:
+#      from_secret: VAULT_TOKEN_PROD
+#    VAULT_ADDR_SIT:
+#      from_secret: VAULT_ADDR_SIT
+#    VAULT_TOKEN_SIT:
+#      from_secret: VAULT_TOKEN_SIT
+#  when:
+#    event:
+#      - cron
+#    cron:
+#      - renew-vault-tokens
+#...
