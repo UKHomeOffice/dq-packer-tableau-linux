@@ -72,15 +72,15 @@ steps:
   commands:
     # Display CI Drone Vault Token
     - set -xv
-    - export VAULT_ADDR=$${VAULT_ADDR_SIT}
-    - export VAULT_TOKEN=$${VAULT_TOKEN_SIT}
+    - export VAULT_ADDR_EXPORT=$${VAULT_ADDR_IN_DRONE}
+    - export VAULT_TOKEN_EXPORT=$${VAULT_TOKEN_IN_DRONE}
     - vault token renew > /dev/null
-    - export VAULT_ADDR=$${VAULT_ADDR_SIT}
-    - export VAULT_TOKEN=$${VAULT_TOKEN_SIT}
+    - export VAULT_ADDR_EXPORT=$${VAULT_ADDR_IN_DRONE}
+    - export VAULT_TOKEN_EXPORT=$${VAULT_TOKEN_IN_DRONE}
   environment:
-    VAULT_ADDR:
+    VAULT_ADDR_IN_DRONE:
       from_secret: VAULT_ADDR_SIT
-    VAULT_TOKEN:
+    VAULT_TOKEN_IN_DRONE:
       from_secret: VAULT_TOKEN_SIT
   when:
     event:
