@@ -22,7 +22,7 @@
         "most_recent": true
       },
       "tags":{
-            "name": "Packer Build IJR"
+            "Name": "Packer Build IJR"
       },
       "launch_block_device_mappings": [
         {
