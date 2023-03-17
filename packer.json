@@ -6,7 +6,6 @@
   },
   "builders": [
     {
-      "name": "Packer Builder IJR",
       "type": "amazon-ebs",
       "access_key": "{{user `access_key`}}",
       "secret_key": "{{user `secret_key`}}",
@@ -22,8 +21,8 @@
         ],
         "most_recent": true
       },
-      "run_tags":{
-            "RunTag":"Pack Build IJR"
+      "tags":{
+            "name":"Pack Build IJR"
       },
       "launch_block_device_mappings": [
         {
