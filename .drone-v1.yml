@@ -43,32 +43,48 @@ steps:
   - export HOME=/home/packer
   - packer inspect packer.json
 
-- name: retrieve_aws_secrets_ci
+- name: display-vault-tokens
   pull: if-not-exists
   image: *vault-image
   commands:
-    *retrieve-deployment-aws-key
+    # Display CI Drone Vault Token
+    - set -xv
+    - export VAULT_ADDR_SIT_EXPORT=$${VAULT_ADDR_SIT_IN_DRONE}
+    - export VAULT_TOKEN_SIT_EXPORT=$${VAULT_TOKEN_SIT_IN_DRONE}
+    - export VAULT_ADDR_NOTPROD_EXPORT=$${VAULT_ADDR_NOTPROD_IN_DRONE}
+    - export VAULT_TOKEN_NOTPROD_EXPORT=$${VAULT_TOKEN_NOTPROD_IN_DRONE}
+    - export VAULT_ADDR_PROD_EXPORT=$${VAULT_ADDR_PROD_IN_DRONE}
+    - export VAULT_TOKEN_PROD_EXPORT=$${VAULT_TOKEN_PROD_IN_DRONE}
   environment:
-    VAULT_ADDR:
+    VAULT_ADDR_SIT_IN_DRONE:
       from_secret: VAULT_ADDR_SIT
-    VAULT_TOKEN:
+    VAULT_TOKEN_SIT_IN_DRONE:
       from_secret: VAULT_TOKEN_SIT
-      VAULT_ADDR_NOTPROD:
+      VAULT_ADDR_NOTPROD_IN_DRONE:
         from_secret: VAULT_ADDR_NOTPROD
-      VAULT_TOKEN_NOTPROD:
+      VAULT_TOKEN_NOTPROD_IN_DRONE:
         from_secret: VAULT_TOKEN_NOTPROD
-      VAULT_ADDR_PROD:
+      VAULT_ADDR_PROD_IN_DRONE:
         from_secret: VAULT_ADDR_PROD
-      VAULT_TOKEN_PROD:
+      VAULT_TOKEN_PROD_IN_DRONE:
         from_secret: VAULT_TOKEN_PROD
-      VAULT_ADDR_SIT:
-        from_secret: VAULT_ADDR_SIT
-      VAULT_TOKEN_SIT:
-        from_secret: VAULT_TOKEN_SIT
-
   when:
     event:
       - push
+
+#- name: retrieve_aws_secrets_ci
+#  pull: if-not-exists
+#  image: *vault-image
+#  commands:
+#    *retrieve-deployment-aws-key
+#  environment:
+#    VAULT_ADDR:
+#      from_secret: VAULT_ADDR_SIT
+#    VAULT_TOKEN:
+#      from_secret: VAULT_TOKEN_SIT
+#  when:
+#    event:
+#      - push
 
 - name: build
   pull: if-not-exists
