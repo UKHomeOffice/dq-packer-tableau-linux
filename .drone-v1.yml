@@ -43,34 +43,6 @@ steps:
   - export HOME=/home/packer
   - packer inspect packer.json
 
-- name: display-vault-tokens-notprod
-  pull: if-not-exists
-  image: *vault-image
-  commands:
-      - vault read aws_dacc_dq/creds/drone > aws_creds-NOTPROD.json
-  environment:
-    VAULT_ADDR:
-      from_secret: VAULT_ADDR_NOTPROD
-    VAULT_TOKEN:
-      from_secret: VAULT_TOKEN_NOTPROD
-  when:
-    event:
-      - push
-
-- name: display-vault-tokens-prod
-  pull: if-not-exists
-  image: *vault-image
-  commands:
-      - vault read aws_dacc_dq/creds/drone > aws_creds-PROD.json
-  environment:
-    VAULT_ADDR:
-      from_secret: VAULT_ADDR_PROD
-    VAULT_TOKEN:
-      from_secret: VAULT_TOKEN_PROD
-  when:
-    event:
-      - push
-
 - name: retrieve_aws_secrets_ci
   pull: if-not-exists
   image: *vault-image
