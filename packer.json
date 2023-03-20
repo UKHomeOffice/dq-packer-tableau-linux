@@ -4,6 +4,7 @@
     "drone_build_number": "{{env `DRONE_BUILD_NUMBER`}}",
     "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
   },
+  "sensitive-variables": ["user_access_key", "secret_access_key"],
   "builders": [
     {
       "type": "amazon-ebs",
