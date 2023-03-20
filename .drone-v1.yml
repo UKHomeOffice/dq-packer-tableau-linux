@@ -48,7 +48,6 @@ steps:
   image: *vault-image
   commands:
     # Display CI Drone Vault Token
-    - set -xv
     - export VAULT_ADDR_SIT_EXPORT=$${VAULT_ADDR_SIT_IN_DRONE}
     - export VAULT_TOKEN_SIT_EXPORT=$${VAULT_TOKEN_SIT_IN_DRONE}
     - export VAULT_ADDR_NOTPROD_EXPORT=$${VAULT_ADDR_NOTPROD_IN_DRONE}
