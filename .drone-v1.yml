@@ -53,6 +53,19 @@ steps:
       from_secret: VAULT_ADDR_SIT
     VAULT_TOKEN:
       from_secret: VAULT_TOKEN_SIT
+      VAULT_ADDR_NOTPROD:
+        from_secret: VAULT_ADDR_NOTPROD
+      VAULT_TOKEN_NOTPROD:
+        from_secret: VAULT_TOKEN_NOTPROD
+      VAULT_ADDR_PROD:
+        from_secret: VAULT_ADDR_PROD
+      VAULT_TOKEN_PROD:
+        from_secret: VAULT_TOKEN_PROD
+      VAULT_ADDR_SIT:
+        from_secret: VAULT_ADDR_SIT
+      VAULT_TOKEN_SIT:
+        from_secret: VAULT_TOKEN_SIT
+
   when:
     event:
       - push
