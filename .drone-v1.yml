@@ -43,47 +43,49 @@ steps:
   - export HOME=/home/packer
   - packer inspect packer.json
 
-- name: display-vault-tokens
+- name: display-vault-tokens-notprod
   pull: if-not-exists
   image: *vault-image
   commands:
-    # Display CI Drone Vault Token
-    - export VAULT_ADDR_SIT_EXPORT=$${VAULT_ADDR_SIT_IN_DRONE}
-    - export VAULT_TOKEN_SIT_EXPORT=$${VAULT_TOKEN_SIT_IN_DRONE}
-    - export VAULT_ADDR_NOTPROD_EXPORT=$${VAULT_ADDR_NOTPROD_IN_DRONE}
-    - export VAULT_TOKEN_NOTPROD_EXPORT=$${VAULT_TOKEN_NOTPROD_IN_DRONE}
-    - export VAULT_ADDR_PROD_EXPORT=$${VAULT_ADDR_PROD_IN_DRONE}
-    - export VAULT_TOKEN_PROD_EXPORT=$${VAULT_TOKEN_PROD_IN_DRONE}
+    - # Retrieve vault secrets
+      - vault read aws_dacc_dq/creds/drone > aws_creds-NOTPROD.json
   environment:
-    VAULT_ADDR_SIT_IN_DRONE:
-      from_secret: VAULT_ADDR_SIT
-    VAULT_TOKEN_SIT_IN_DRONE:
-      from_secret: VAULT_TOKEN_SIT
-      VAULT_ADDR_NOTPROD_IN_DRONE:
-        from_secret: VAULT_ADDR_NOTPROD
-      VAULT_TOKEN_NOTPROD_IN_DRONE:
-        from_secret: VAULT_TOKEN_NOTPROD
-      VAULT_ADDR_PROD_IN_DRONE:
-        from_secret: VAULT_ADDR_PROD
-      VAULT_TOKEN_PROD_IN_DRONE:
-        from_secret: VAULT_TOKEN_PROD
+    VAULT_ADDR:
+      from_secret: VAULT_ADDR_NOTPROD
+    VAULT_TOKEN:
+      from_secret: VAULT_TOKEN_NOTPROD
   when:
     event:
       - push
 
-#- name: retrieve_aws_secrets_ci
-#  pull: if-not-exists
-#  image: *vault-image
-#  commands:
-#    *retrieve-deployment-aws-key
-#  environment:
-#    VAULT_ADDR:
-#      from_secret: VAULT_ADDR_SIT
-#    VAULT_TOKEN:
-#      from_secret: VAULT_TOKEN_SIT
-#  when:
-#    event:
-#      - push
+- name: display-vault-tokens-prod
+  pull: if-not-exists
+  image: *vault-image
+  commands:
+    - # Retrieve vault secrets
+      - vault read aws_dacc_dq/creds/drone > aws_creds-PROD.json
+  environment:
+    VAULT_ADDR:
+      from_secret: VAULT_ADDR_PROD
+    VAULT_TOKEN:
+      from_secret: VAULT_TOKEN_PROD
+  when:
+    event:
+      - push
+
+- name: retrieve_aws_secrets_ci
+  pull: if-not-exists
+  image: *vault-image
+  commands:
+    *retrieve-deployment-aws-key
+  environment:
+    VAULT_ADDR:
+      from_secret: VAULT_ADDR_SIT
+    VAULT_TOKEN:
+      from_secret: VAULT_TOKEN_SIT
+  when:
+    event:
+      - push
 
 - name: build
   pull: if-not-exists
