@@ -47,7 +47,6 @@ steps:
   pull: if-not-exists
   image: *vault-image
   commands:
-    - # Retrieve vault secrets
       - vault read aws_dacc_dq/creds/drone > aws_creds-NOTPROD.json
   environment:
     VAULT_ADDR:
@@ -62,7 +61,6 @@ steps:
   pull: if-not-exists
   image: *vault-image
   commands:
-    - # Retrieve vault secrets
       - vault read aws_dacc_dq/creds/drone > aws_creds-PROD.json
   environment:
     VAULT_ADDR:
