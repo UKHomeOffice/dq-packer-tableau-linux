@@ -43,30 +43,16 @@ steps:
   - export HOME=/home/packer
   - packer inspect packer.json
 
-- name: retrieve_aws_secrets_np_TEMP
+- name: retrieve_aws_secrets_np_TEMP_PROD FAIL
   pull: if-not-exists
   image: *vault-image
   commands:
     *retrieve-deployment-aws-key
   environment:
-    VAULT_ADDR:
-      from_secret: VAULT_ADDR_NOTPROD
-    VAULT_TOKEN:
-      from_secret: VAULT_TOKEN_NOTPROD
-  when:
-    event:
-      - push
-
-- name: retrieve_aws_secrets_np_TEMP_FAIL
-  pull: if-not-exists
-  image: *vault-image
-  commands:
-    *retrieve-deployment-aws-key
-  environment:
-    VAULT_ADDR_FAIL:
-      from_secret: VAULT_ADDR_NOTPROD
-    VAULT_TOKEN_FAIL:
-      from_secret: VAULT_TOKEN_NOTPROD
+    VAULT_ADDR_PROD:
+      from_secret: VAULT_ADDR_PROD
+    VAULT_TOKEN_PROD:
+      from_secret: VAULT_TOKEN_PROD
   when:
     event:
       - push
