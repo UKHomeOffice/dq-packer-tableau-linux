@@ -2,7 +2,7 @@
 global-variables:
   vault-image: &vault-image  docker.digital.homeoffice.gov.uk/dq/dq-vault-awscli:1.43
   packer-image: &packer-image quay.io/ukhomeofficedigital/dq-packer-ansible:b72
-  copy-image: &copy-image quay.io/ukhomeofficedigital/dq-packer-encrypt-copy:dev-22
+  copy-image: &copy-image quay.io/ukhomeofficedigital/dq-packer-encrypt-copy:dev-23
 
 kind: pipeline
 name: default
@@ -21,10 +21,11 @@ x-anchors:
     - vault lease renew -increment=3600 $${LEASE_ID}
     # Get the AWS credentials
     - echo "export AWS_ACCESS_KEY_ID=$(cat aws_creds.json | grep access_key | awk -F ' ' '{print $2}')" > set_aws_secrets.sh
-    - echo "export aws_id=$(cat aws_creds.json | grep access_key | awk -F ' ' '{print $2}')" >> set_aws_secrets.sh
     - echo "export AWS_SECRET_ACCESS_KEY=$(cat aws_creds.json | grep secret_key | awk -F ' ' '{print $2}')" >> set_aws_secrets.sh
-    - echo "export aws_key=$(cat aws_creds.json | grep secret_key | awk -F ' ' '{print $2}')" >> set_aws_secrets.sh
     - echo "export AWS_DEFAULT_REGION=eu-west-2" >> set_aws_secrets.sh
+    - echo "export aws_id=${AWS_ACCESS_KEY_ID}" >> set_aws_secrets.sh
+    - echo "export aws_key=${AWS_SECRET_ACCESS_KEY}" >> set_aws_secrets.sh
+    - echo "export region=${AWS_DEFAULT_REGION}" >> set_aws_secrets.sh
     # Since AWS is eventually consistent we need to sleep a little while so the AWS key is created and made available
     - sleep 20
 
@@ -89,7 +90,6 @@ steps:
   commands:
   - source ./set_aws_secrets.sh
   - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
-  - export region=eu-west-2
   - export HOME=/home/packer
   - cd /home/packer
   - ./build.sh
