@@ -24,7 +24,7 @@ x-anchors:
     - echo "export AWS_SECRET_ACCESS_KEY=$(cat aws_creds.json | grep secret_key | awk -F ' ' '{print $2}')" >> set_aws_secrets.sh
     - echo "export AWS_DEFAULT_REGION=eu-west-2" >> set_aws_secrets.sh
     # Get the AWS credentials - for `copy-image`
-    - echo "export aws_id=$(cat aws_creds.json | grep access_key | awk -F ' ' '{print $2}')" > set_aws_secrets.sh
+    - echo "export aws_id=$(cat aws_creds.json | grep access_key | awk -F ' ' '{print $2}')" >> set_aws_secrets.sh
     - echo "export aws_key=$(cat aws_creds.json | grep secret_key | awk -F ' ' '{print $2}')" >> set_aws_secrets.sh
     - echo "export region=eu-west-2" >> set_aws_secrets.sh
     # Since AWS is eventually consistent we need to sleep a little while so the AWS key is created and made available
