@@ -23,13 +23,11 @@
     shell:
        sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
 
-  - name: DNF Install Dependencies
-    dnf: name={{ item }}
-    with_items:
-      - krb5-libs
-      - openssl-devel
-      - git
-    become: true
+#  - name: DNF Install Dependencies
+#    dnf: name={{ item }}
+#    with_items:
+#      - openssl-devel
+#    become: true
 
   - name: GET Tableau files from DQ-config-bucket
     shell: |
