@@ -26,6 +26,7 @@
   - name: DNF Install Dependencies
     dnf: name={{ item }}
     with_items:
+      - krb5-libs
       - openssl-devel
       - git
     become: true
