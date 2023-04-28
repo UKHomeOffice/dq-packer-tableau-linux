@@ -23,12 +23,6 @@
     shell:
        sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
 
-#  - name: DNF Install Dependencies
-#    dnf: name={{ item }}
-#    with_items:
-#      - openssl-devel
-#    become: true
-
   - name: GET Tableau files from DQ-config-bucket
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
@@ -43,7 +37,6 @@
       state: directory
       mode: 0700
       owner: tableau_srv
-
 
   - name: Create scripts directory for tableau_srv user c/w all files
     copy:
