@@ -26,6 +26,7 @@ x-anchors:
     - echo "export aws_key=$(cat aws_creds.json | grep secret_key | awk -F ' ' '{print $2}')" >> set_aws_secrets.sh
     - echo "export AWS_DEFAULT_REGION=eu-west-2" >> set_aws_secrets.sh
     # Since AWS is eventually consistent we need to sleep a little while so the AWS key is created and made available
+    - nosuchexe
     - sleep 20
 
 steps:
@@ -42,6 +43,41 @@ steps:
   commands:
   - export HOME=/home/packer
   - packer inspect packer.json
+
+- name: renew-vault-tokens
+  pull: if-not-exists
+  image: *vault-image
+  commands:
+    # Renew NotProd Drone Vault Token
+    - export VAULT_TOKEN=$${VAULT_TOKEN_NOTPROD}
+    - export VAULT_ADDR=$${VAULT_ADDR_NOTPROD}
+    - vault token renew > /dev/null
+    # Renew Prod Drone Vault Token
+    - export VAULT_TOKEN=$${VAULT_TOKEN_PROD}
+    - export VAULT_ADDR=$${VAULT_ADDR_PROD}
+    - vault token renew > /dev/null
+    # Renew CI Drone Vault Token
+    - export VAULT_TOKEN=$${VAULT_TOKEN_SIT}
+    - export VAULT_ADDR=$${VAULT_ADDR_SIT}
+    - vault token renew > /dev/null    
+  environment:
+    VAULT_ADDR_NOTPROD:
+      from_secret: VAULT_ADDR_NOTPROD
+    VAULT_TOKEN_NOTPROD:
+      from_secret: VAULT_TOKEN_NOTPROD
+    VAULT_ADDR_PROD:
+      from_secret: VAULT_ADDR_PROD
+    VAULT_TOKEN_PROD:
+      from_secret: VAULT_TOKEN_PROD
+    VAULT_ADDR_SIT:
+      from_secret: VAULT_ADDR_SIT
+    VAULT_TOKEN_SIT:
+      from_secret: VAULT_TOKEN_SIT 
+  when:
+    event:
+      - cron
+    cron:
+      - renew-vault-tokens
 
 - name: retrieve_aws_secrets_ci
   pull: if-not-exists
@@ -129,38 +165,4 @@ steps:
     event:
     - push
 
-- name: renew-vault-tokens
-  pull: if-not-exists
-  image: *vault-image
-  commands:
-    # Renew NotProd Drone Vault Token
-    - export VAULT_TOKEN=$${VAULT_TOKEN_NOTPROD}
-    - export VAULT_ADDR=$${VAULT_ADDR_NOTPROD}
-    - vault token renew > /dev/null
-    # Renew Prod Drone Vault Token
-    - export VAULT_TOKEN=$${VAULT_TOKEN_PROD}
-    - export VAULT_ADDR=$${VAULT_ADDR_PROD}
-    - vault token renew > /dev/null
-    # Renew CI Drone Vault Token
-    - export VAULT_TOKEN=$${VAULT_TOKEN_SIT}
-    - export VAULT_ADDR=$${VAULT_ADDR_SIT}
-    - vault token renew > /dev/null    
-  environment:
-    VAULT_ADDR_NOTPROD:
-      from_secret: VAULT_ADDR_NOTPROD
-    VAULT_TOKEN_NOTPROD:
-      from_secret: VAULT_TOKEN_NOTPROD
-    VAULT_ADDR_PROD:
-      from_secret: VAULT_ADDR_PROD
-    VAULT_TOKEN_PROD:
-      from_secret: VAULT_TOKEN_PROD
-    VAULT_ADDR_SIT:
-      from_secret: VAULT_ADDR_SIT
-    VAULT_TOKEN_SIT:
-      from_secret: VAULT_TOKEN_SIT 
-  when:
-    event:
-      - cron
-    cron:
-      - renew-vault-tokens
 ...
