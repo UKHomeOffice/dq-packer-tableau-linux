@@ -62,12 +62,12 @@
       mode: 0755
       owner: tableau_srv
 
-  - name: Create cronjob to run script to backup Tableau to S3 every day at 8am
+  - name: Create cronjob to run script to backup Tableau to S3 every day at 9am
     cron:
       name: Tableau to S3 backup
       user: tableau_srv
       minute: 0
-      hour: 8
+      hour: 9
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
   - name: DNF Install Tableau - Tab CMD
@@ -86,8 +86,8 @@
     shell: |
       mkdir -p /opt/tableau/tableau_driver/jdbc
       cp /tmp/install/AthenaJDBC42.jar /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
-      cp /tmp/install/postgresql-42.2.14.jar /opt/tableau/tableau_driver/jdbc/postgresql-42.2.14.jar
-      chmod 755 /opt/tableau/tableau_driver/jdbc/postgresql-42.2.14.jar
+      cp /tmp/install/postgresql-42.jar /opt/tableau/tableau_driver/jdbc/postgresql-42.jar
+      chmod 755 /opt/tableau/tableau_driver/jdbc/postgresql-42.jar
       chmod 755 /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
     become: true
 
