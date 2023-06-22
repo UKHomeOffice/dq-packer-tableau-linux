@@ -26,12 +26,20 @@
   - name: DNF Install Dependencies
     dnf: name={{ item }}
     with_items:
+      - zip
+      - unzip
       - git
 #      - krb5-libs
 #      - openssl-devel
     become: true
 
-  - name: GET Tableau files from DQ-config-bucket
+  - name: Get AWS-CLI
+    shell: |
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      sudo ./aws/install
+
+  - name: Get Tableau files from DQ-config-bucket
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
 
