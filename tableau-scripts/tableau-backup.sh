@@ -46,12 +46,11 @@ else
 fi
 
 # Lookup Green/Blue from S3
-# Live = Blue, "to-be Live" = Green
 STAGING=0
 if [ $TABLEAU_ENVIRONMENT == "internal" ]; then
-  export BLUE_IP=$(aws s3 cp s3://$S3_HTTPD_CONFIG_BUCKET/ssl.conf - | grep -m 1 ProxyPass | awk -F // '{ print $2 }' | tr -d '/')
+  export GREEN_IP=$(aws s3 cp s3://$S3_HTTPD_CONFIG_BUCKET/ssl.conf - | grep -m 1 ProxyPass | awk -F // '{ print $2 }' | tr -d '/')
 elif [ $TABLEAU_ENVIRONMENT == "external" ]; then
-  export BLUE_IP=$(aws s3 cp s3://$S3_HAPROXY_CONFIG_BUCKET/haproxy.cfg - | grep "server tableau_ext" | awk '{ print $3 }' | awk -F : '{ print $1 }')
+  export GREEN_IP=$(aws s3 cp s3://$S3_HAPROXY_CONFIG_BUCKET/haproxy.cfg - | grep "server tableau_ext" | awk '{ print $3 }' | awk -F : '{ print $1 }')
 elif [ $TABLEAU_ENVIRONMENT == "staging" ]; then
   echo "Environment is Staging"
   STAGING=1
@@ -64,15 +63,15 @@ echo "== Reading Tableau Server IP address"
 export CURRENT_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 
 
-if [ $BLUE_IP == $CURRENT_IP ]; then
-  echo "== Set destination as Blue instance"
-  export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/blue/"
+if [ $GREEN_IP == $CURRENT_IP ]; then
+  echo "== Set destination as Green instance"
+  export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/green/"
 elif [ $STAGING -eq 1 ]; then
   echo "== Set destination as Staging instance"
   export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/staging/"
 else
-  echo "== Set destination as Green instance"
-  export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/green/${CURRENT_IP}/"
+  echo "== Set destination as Blue instance"
+  export BACKUP_LOCATION="${DATA_ARCHIVE_TAB_BACKUP_URL}/blue/${CURRENT_IP}/"
 fi
 
 
