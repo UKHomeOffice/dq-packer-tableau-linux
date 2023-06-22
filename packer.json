@@ -15,10 +15,11 @@
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
-          "name": "cloudimg-redhat8*"
+          "name": "RHEL-8.*",
+          "architecture": "x86_64"
         },
         "owners": [
-          "679593333241"
+          "309956199498"
         ],
         "most_recent": true
       },
