@@ -1,8 +1,9 @@
 {
   "variables": {
     "access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
-    "drone_build_number": "{{env `DRONE_BUILD_NUMBER`}}",
-    "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
+    "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "region":  "{{env `AWS_DEFAULT_REGION`}}",
+    "drone_build_number": "{{env `DRONE_BUILD_NUMBER`}}"
   },
   "sensitive-variables": ["access_key", "secret_key"],
   "builders": [
@@ -10,7 +11,7 @@
       "type": "amazon-ebs",
       "access_key": "{{user `access_key`}}",
       "secret_key": "{{user `secret_key`}}",
-      "region": "eu-west-2",
+      "region": "{{user `region`}}",
       "iam_instance_profile": "packer_builder",
       "source_ami_filter": {
         "filters": {
