@@ -103,8 +103,8 @@
       mkdir -p /opt/tableau/tableau_driver/jdbc
       cp /tmp/install/AthenaJDBC42.jar /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
       cp /tmp/install/postgresql-42.jar /opt/tableau/tableau_driver/jdbc/postgresql-42.jar
-      chmod 755 /opt/tableau/tableau_driver/jdbc/postgresql-42.jar
       chmod 755 /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
+      chmod 755 /opt/tableau/tableau_driver/jdbc/postgresql-42.jar
     become: true
 
   - name: GET CloudWatch logs config from DQ-config-bucket
