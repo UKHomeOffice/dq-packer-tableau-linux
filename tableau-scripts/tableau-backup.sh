@@ -42,7 +42,7 @@ if tsm maintenance backup --file ts_backup --append-date; then
   echo "== Backup successfully created."
 else 
   echo "== Error creating backup. Exiting..."
-  exit -1
+  exit 1
 fi
 
 # Lookup Green/Blue from S3
@@ -56,7 +56,7 @@ elif [ $TABLEAU_ENVIRONMENT == "staging" ]; then
   STAGING=1
 else
   echo "Unknown Tableau Server type, not backing up. Exiting..."
-  exit -2
+  exit 2
 fi
 
 echo "== Reading Tableau Server IP address"
@@ -82,7 +82,7 @@ if [ ${NEWEST_BACKUP_FILE_COUNT} -ne 1 ];
 then
   echo "== ERROR: Found ${NEWEST_BACKUP_FILE_COUNT} backup files in ${backup_dir}."
   echo "== Exiting..."
-  exit -3
+  exit 3
 fi
 
 
