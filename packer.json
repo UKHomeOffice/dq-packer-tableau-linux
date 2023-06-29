@@ -3,7 +3,8 @@
     "access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
     "region":  "{{env `AWS_DEFAULT_REGION`}}",
-    "drone_build_number": "{{env `DRONE_BUILD_NUMBER`}}"
+    "drone_build_number": "{{env `DRONE_BUILD_NUMBER`}}",
+    "drone_repo_name": "{{env `DRONE_REPO_NAME`}}"
   },
   "sensitive-variables": ["access_key", "secret_key"],
   "builders": [
@@ -12,6 +13,7 @@
       "access_key": "{{user `access_key`}}",
       "secret_key": "{{user `secret_key`}}",
       "region": "{{user `region`}}",
+      "iam_instance_profile": "packer_builder",
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
@@ -24,7 +26,7 @@
         "most_recent": true
       },
       "run_tags":{
-            "Name": "Packer Build [Tableau Linux - {{user `drone_build_number`}}]"
+            "Name": "Packer Build [{{user `drone_repo_name`}} - {{user `drone_build_number`}}]"
       },
       "launch_block_device_mappings": [
         {
