@@ -1,11 +1,4 @@
 ---
-- name: Pre-reqs for ansible to run
-  hosts: all
-  gather_facts: false
-  become: true
-  pre_tasks:
-    - raw: test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -f /usr/bin/python3.9 /usr/bin/python )
-
 - name: Build Tableau Linux Server
   hosts: all
   become: true
@@ -29,9 +22,15 @@
       - zip
       - unzip
       - git
-#      - krb5-libs
-#      - openssl-devel
+      - python39
     become: true
+
+  - name: Create python link
+    file:
+      src: /usr/bin/python3.9
+      dest: /usr/bin/python
+      state: link
+      force: true
 
   - name: Get AWS-CLI
     shell: |
@@ -116,7 +115,7 @@
   - name: Install CloudWatch log agent
     environment:
       LC_ALL: C
-    shell: ln -s -f /usr/bin/python3.9 /usr/bin/python && /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf
+    shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf
     args:
       creates: /var/awslogs/etc/aws.conf
 
@@ -258,8 +257,8 @@
        chown -R tableau_srv:tableau_srv /opt/tableau
 
   - name: install selinux bindings
-    shell: |
-      pip3 install selinux 
+    pip:
+      name: selinux
 
   - name: Secure sshd_config
     lineinfile: dest=/etc/ssh/sshd_config
