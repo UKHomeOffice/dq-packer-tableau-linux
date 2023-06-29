@@ -3,7 +3,8 @@
     "access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
     "region":  "{{env `AWS_DEFAULT_REGION`}}",
-    "drone_build_number": "{{env `DRONE_BUILD_NUMBER`}}"
+    "drone_build_number": "{{env `DRONE_BUILD_NUMBER`}}",
+    "drone_repo_name": "{{env `DRONE_REPO_NAME`}}"
   },
   "sensitive-variables": ["access_key", "secret_key"],
   "builders": [
@@ -24,11 +25,8 @@
         ],
         "most_recent": true
       },
-      "tags":{
-            "Name": "Packer Build IJR"
-      },
       "run_tags":{
-            "Name": "Packer Build IJR"
+            "Name": "Packer Build [{{user `drone_repo_name`}}: {{user `drone_build_number`}}]"
       },
       "launch_block_device_mappings": [
         {
