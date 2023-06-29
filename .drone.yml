@@ -9,7 +9,7 @@ platform:
 global-variables:
   vault-image: &vault-image  docker.digital.homeoffice.gov.uk/dq/dq-vault-awscli:1.43
   packer-image: &packer-image quay.io/ukhomeofficedigital/dq-packer-ansible
-  copy-image: &copy-image quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
+  copy-image: &copy-image quay.io/ukhomeofficedigital/dq-packer-encrypt-copy:dev-98
 
 x-anchors:
   retrieve-deployment-aws-key: &retrieve-deployment-aws-key
@@ -73,20 +73,20 @@ steps:
   depends_on:
     - inspect
 
-- name: build
-  pull: if-not-exists
-  image: *packer-image
-  commands:
-    - source ./set_aws_secrets_ci.sh
-    - export HOME=/home/packer
-    - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
-    - packer --version
-    - packer build packer.json
-  when:
-    event:
-    - push
-  depends_on:
-    - retrieve_aws_secrets_ci
+#- name: build
+#  pull: if-not-exists
+#  image: *packer-image
+#  commands:
+#    - source ./set_aws_secrets_ci.sh
+#    - export HOME=/home/packer
+#    - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
+#    - packer --version
+#    - packer build packer.json
+#  when:
+#    event:
+#    - push
+#  depends_on:
+#    - retrieve_aws_secrets_ci
 
 - name: retrieve_aws_secrets_np
   pull: if-not-exists
@@ -102,7 +102,8 @@ steps:
     event:
       - push
   depends_on:
-    - build
+    - retrieve_aws_secrets_ci
+#    - build
 
 - name: packer-copy-notprod
   pull: always
