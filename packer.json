@@ -26,7 +26,7 @@
         "most_recent": true
       },
       "run_tags":{
-            "Name": "Packer Build [{{user `drone_repo_name`}} - {{user `drone_build_number`}}]"
+            "Name": "Packer Build [{{user `drone_repo_name`}}: {{user `drone_build_number`}}]"
       },
       "launch_block_device_mappings": [
         {
