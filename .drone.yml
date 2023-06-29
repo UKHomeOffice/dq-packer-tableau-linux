@@ -73,20 +73,20 @@ steps:
   depends_on:
     - inspect
 
-- name: build
-  pull: if-not-exists
-  image: *packer-image
-  commands:
-    - source ./set_aws_secrets_ci.sh
-    - export HOME=/home/packer
-    - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
-    - packer --version
-    - packer build packer.json
-  when:
-    event:
-    - push
-  depends_on:
-    - retrieve_aws_secrets_ci
+#- name: build
+#  pull: if-not-exists
+#  image: *packer-image
+#  commands:
+#    - source ./set_aws_secrets_ci.sh
+#    - export HOME=/home/packer
+#    - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
+#    - packer --version
+#    - packer build packer.json
+#  when:
+#    event:
+#    - push
+#  depends_on:
+#    - retrieve_aws_secrets_ci
 
 - name: retrieve_aws_secrets_np
   pull: if-not-exists
@@ -102,7 +102,8 @@ steps:
     event:
       - push
   depends_on:
-    - build
+    - retrieve_aws_secrets_ci
+#    - build
 
 - name: packer-copy-notprod
   pull: always
