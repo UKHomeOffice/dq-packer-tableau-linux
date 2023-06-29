@@ -12,7 +12,6 @@
       "access_key": "{{user `access_key`}}",
       "secret_key": "{{user `secret_key`}}",
       "region": "{{user `region`}}",
-      "iam_instance_profile": "packer_builder",
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
@@ -24,11 +23,8 @@
         ],
         "most_recent": true
       },
-      "tags":{
-            "Name": "Packer Build IJR"
-      },
       "run_tags":{
-            "Name": "Packer Build IJR"
+            "Name": "Packer Build [Tableau Linux - {{user `drone_build_number`}}]"
       },
       "launch_block_device_mappings": [
         {
