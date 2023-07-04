@@ -1,11 +1,4 @@
 ---
-- name: Pre-reqs for ansible to run
-  hosts: all
-  gather_facts: false
-  become: yes
-  pre_tasks:
-    - raw:  test -e /usr/bin/python || ( dnf clean packages && dnf install -y python39 && ln -s -f /usr/bin/python3.9 /usr/bin/python)
-
 - name: Build Tableau Linux Server
   hosts: all
   become: true
@@ -19,99 +12,140 @@
     shell:
        systemctl enable rc-local.service && systemctl start rc-local.service
 
-
   - name: perform repo sed replace
     shell:
        sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
 
-  - name: GET Tableau files from DQ-config-bucket
+  - name: DNF Install Dependencies
+    dnf: name={{ item }}
+    with_items:
+      - zip
+      - unzip
+      - git
+      - python39
+    become: true
+
+  - name: Create python link
+    file:
+      src: /usr/bin/python3.9
+      dest: /usr/bin/python
+      state: link
+      force: true
+
+  - name: Get AWS-CLI
+    shell: |
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      sudo ./aws/install
+
+  - name: Get Tableau files from DQ-config-bucket
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/gold-master /tmp/install --recursive
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: DNF Install other packages (Tableau stuff from config_bucket & zip/unzip)
+  - name: Create tableau_srv user
+    user:
+      name: tableau_srv
+
+  - name: Create .ssh directory for tableau_srv user
+    file:
+      path: /home/tableau_srv/.ssh
+      state: directory
+      mode: 0700
+      owner: tableau_srv
+
+  - name: Create scripts directory for tableau_srv user c/w all files
+    copy:
+      src: tableau-scripts/
+      dest: /home/tableau_srv/scripts
+      owner: tableau_srv
+      group: tableau_srv
+      mode: 0555
+
+  - name: Ensure Tableau backup to S3 log file for tableau_srv user exists
+    copy:
+      content: ""
+      dest: /var/log/tableau-backup-to-s3.log
+      force: no
+      owner: tableau_srv
+      group: tableau_srv
+      mode: 0644
+
+  - name: Create directory for old Tableau backup files for tableau_srv user
+    file:
+      path: /var/log/tableau-backup-logs
+      state: directory
+      mode: 0755
+      owner: tableau_srv
+
+  - name: Create cronjob to run script to backup Tableau to S3 every day at 9am
+    cron:
+      name: Tableau to S3 backup
+      user: tableau_srv
+      minute: 0
+      hour: 9
+      job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
+
+  - name: DNF Install Tableau - Tab CMD
     dnf:
       name:
         - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
+      disable_gpg_check: true
 
-  - name: DNF Install specifically tableau server 
+  - name: DNF Install Tableau - Tableau Server
     dnf:
       name:
         - /tmp/install/tableau-server-gold-master.x86_64.rpm
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
+      disable_gpg_check: true
 
   - name: Install the Postgresql & Athena JDBC Driver
     shell: |
       mkdir -p /opt/tableau/tableau_driver/jdbc
       cp /tmp/install/AthenaJDBC42.jar /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
-      cp /tmp/install/postgresql-42.2.14.jar /opt/tableau/tableau_driver/jdbc/postgresql-42.2.14.jar
-      chmod 755 /opt/tableau/tableau_driver/jdbc/postgresql-42.2.14.jar
+      cp /tmp/install/postgresql-42.jar /opt/tableau/tableau_driver/jdbc/postgresql-42.jar
       chmod 755 /opt/tableau/tableau_driver/jdbc/AthenaJDBC42.jar
+      chmod 755 /opt/tableau/tableau_driver/jdbc/postgresql-42.jar
     become: true
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  #- name: Download cloudwatch logs agent
-  #  get_url:
-  #    url: https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
-  #    dest: /tmp/awslogs-agent-setup.py
-  #    mode: "+x"
-
-  - name: GET Cloudwatch logs config from DQ-config-bucket
+  - name: GET CloudWatch logs config from DQ-config-bucket
     shell: |
        /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/cwlogs.conf /tmp
        /usr/local/bin/aws s3 cp s3://dq-config-bucket/dq-tableau-linux/awslogs-agent-setup.py /tmp
        chmod u+x /tmp/awslogs-agent-setup.py
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: Install cloudwatch log agent
+  - name: Install CloudWatch log agent
     environment:
       LC_ALL: C
-    shell: ln -s -f /usr/bin/python3.9 /usr/bin/python && /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf
+    shell: /tmp/awslogs-agent-setup.py --region eu-west-2 --non-interactive -c /tmp/cwlogs.conf
     args:
       creates: /var/awslogs/etc/aws.conf
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: Copy cloudwatch logs starter
+  - name: Copy CloudWatch logs starter
     copy:
       src: scripts/startcloudwatchlogs.sh
       dest: /usr/bin/startcloudwatchlogs.sh
       owner: root
       group: root
       mode: 0755
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
   - name: Make Cron Job to start awslogs with right region
     cron:
       name: Start awslogs
       special_time: reboot
       job: /usr/bin/startcloudwatchlogs.sh
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: Download cloudwatch agent (for ec2 alarms)
+  - name: Download CloudWatch agent (for ec2 alarms)
     get_url:
-      url: https://s3.amazonaws.com/amazoncloudwatch-agent/centos/amd64/latest/amazon-cloudwatch-agent.rpm
+      url: https://s3.amazonaws.com/amazoncloudwatch-agent/redhat/amd64/latest/amazon-cloudwatch-agent.rpm
       dest: /tmp/amazon-cloudwatch-agent.rpm
       mode: "+x"
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: Install cloudwatch agent (for ec2 alarms)
+  - name: Install CloudWatch agent (for ec2 alarms)
     dnf:
       name: /tmp/amazon-cloudwatch-agent.rpm
       state: present
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
+      disable_gpg_check: true
 
-  - name: Cloudwatch Agent config
+  - name: CloudWatch Agent config
     copy:
       dest: /opt/aws/amazon-cloudwatch-agent/bin/config.json
       content: |
@@ -168,10 +202,8 @@
                                 }
                         }
                 }
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
-  - name: Cloudwatch logs config
+  - name: CloudWatch logs config
     copy:
       dest: /tmp/cwlogs.conf
       content: |
@@ -212,29 +244,21 @@
         log_group_name = /TABLEAU/syslog
         log_stream_name = {instance_id}
         datetime_format = %Y-%m-%d %H:%M:%S,%f
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
   - name: Set DNS Resolver Options
     blockinfile:
       path: /etc/sysconfig/network
       block: |
         RES_OPTIONS="rotate timeout:1 attempts:1"
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
   - name: Configure permissions for tableau_srv user
     shell: |
        touch /var/log/user-data.log && chown tableau_srv:tableau_srv /var/log/user-data.log
        chown -R tableau_srv:tableau_srv /opt/tableau
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
 
   - name: install selinux bindings
-    shell: |
-      ln -s -f /usr/bin/python3.9 /usr/bin/python && pip3 install selinux 
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
+    pip:
+      name: selinux
 
   - name: Secure sshd_config
     lineinfile: dest=/etc/ssh/sshd_config
@@ -249,5 +273,3 @@
                 regexp="^X11Forwarding"
                 line="X11Forwarding no"
                 state=present
-    vars:
-      ansible_python_interpreter: "/usr/libexec/platform-python" 
