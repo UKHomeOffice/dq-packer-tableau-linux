@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script to restore from backup from night before (from Green server).
 
-echo "Restoring from most recent (Green) backup."
+echo "Restoring from most recent (Blue) backup."
 echo "This will cause existing WorkBooks and DataSources to be removed from Tableau."
 read -p "Are you sure [y/N]? " -n 1 -r
 echo    # new line
@@ -11,8 +11,8 @@ then
     exit 1
 fi
 
-# Restore from Green
-export BACKUP_LOCATION="$DATA_ARCHIVE_TAB_BACKUP_URL/green/"
+# Restore from Blue
+export BACKUP_LOCATION="$DATA_ARCHIVE_TAB_BACKUP_URL/blue/"
 
 echo "Get most recent Tableau backup from S3"
 export LATEST_BACKUP_NAME=`aws s3 ls $BACKUP_LOCATION | tail -1 | awk '{print $4}'`
