@@ -29,10 +29,12 @@
       - python39
       - wget
       - perl-core
-      - perl-IPC_Cmd
       - zlib-devel
     become: true
 
+  - name: Attempting to install perl-IPC-Cmd through shell
+    shell:
+      dnf install perl-IPC-Cmd -y
 
   - name: get openssl and build from source
     shell: |
