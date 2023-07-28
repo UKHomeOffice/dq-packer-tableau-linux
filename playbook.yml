@@ -39,7 +39,7 @@
   - name: get openssl and build from source
     shell: |
       cd /tmp && wget https://www.openssl.org/source/openssl-3.0.9.tar.gz && tar -xzvf openssl-*.tar.gz && rm -rf openssl-*.tar.gz 
-      cd /tmp/openssl-* && ./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl shared zlib
+      cd /tmp/openssl-3.0.9 && ./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl shared zlib
       make && make install
 
   - name: Create openssl-3.0.9.conf file
