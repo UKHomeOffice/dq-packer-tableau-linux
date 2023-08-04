@@ -86,12 +86,6 @@
       hour: 9
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
-  - name: DNF Install Tableau - Tab CMD
-    dnf:
-      name:
-        - /tmp/install/tableau-tabcmd-gold-master.noarch.rpm
-      disable_gpg_check: true
-
   - name: DNF Install Tableau - Tableau Server
     dnf:
       name:
