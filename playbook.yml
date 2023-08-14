@@ -23,6 +23,7 @@
       - zip
       - unzip
       - git
+      - postgresql
       - python39
     become: true
       
