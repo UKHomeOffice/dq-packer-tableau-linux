@@ -269,3 +269,7 @@
                 regexp="^X11Forwarding"
                 line="X11Forwarding no"
                 state=present
+  - lineinfile: dest=/etc/ssh/sshd_config
+                regexp="^(.*)AllowTcpForwarding"
+                line="AllowTcpForwarding no"
+                state=present
