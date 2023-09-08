@@ -15,26 +15,13 @@ LICENSE_UPDATE_TO_BE_APPLIED="Restart server to apply updated licensing details"
 RET=""
 err=0
 
-if [ ! -z $TAB_PRODUCT_KEY ] # Tableau External
+if [ ! -z $TAB_PRODUCT_KEY ] # Tableau Internal / External Deactivation
 then
   tsm licenses deactivate --license-key "$TAB_PRODUCT_KEY"   --username "$TAB_SRV_USER" --password "$TAB_SRV_PASSWORD"
   err=$((err + $?))
-else # Tableau Internal
-  RET1="$(tsm licenses deactivate --license-key $TAB_PRODUCT_KEY_1 --username $TAB_SRV_USER --password $TAB_SRV_PASSWORD)"
-  err=$((err + $?))
-  echo "$RET1"
-  RET1=${RET1//$'\n'/} # Remove newlines
-  RET="${RET} ${RET1}"
-  RET2="$(tsm licenses deactivate --license-key $TAB_PRODUCT_KEY_2 --username $TAB_SRV_USER --password $TAB_SRV_PASSWORD)"
-  err=$((err + $?))
-  echo "$RET2"
-  RET2=${RET2//$'\n'/} # Remove newlines
-  RET="${RET} ${RET2}"
-  RET3="$(tsm licenses deactivate --license-key $TAB_PRODUCT_KEY_3 --username $TAB_SRV_USER --password $TAB_SRV_PASSWORD)"
-  err=$((err + $?))
-  echo "$RET3"
-  RET3=${RET3//$'\n'/} # Remove newlines
-  RET="${RET} ${RET3}"
+else  # Error logging if no Key found
+  err=$((err + 1))
+  echo "ERROR: No Product Key found - Please Investigate"
 fi
 
 # Check if any of the above failed
