@@ -87,6 +87,22 @@
       hour: 9
       job: . $HOME/.bashrc; /home/tableau_srv/scripts/tableau-backup.sh
 
+  - name: Create cronjob to run script to export contents of Tableau Repository
+    cron:
+      name: Run Tableau Repo export
+      user: tableau_srv
+      minute: 20
+      hour: 11
+      job: source $HOME/.bashrc; /home/tableau_srv/scripts/extract_timings_export.sh > /home/tableau_srv/scripts/export.log 2> /home/tableau_srv/scripts/export.err
+
+  - name: Create cronjob to run script to import contents of Tableau Repository to RDS
+    cron:
+      name: Run Tableau Repo import
+      user: tableau_srv
+      minute: 25
+      hour: 11
+      job: source $HOME/.bashrc; /home/tableau_srv/scripts/extract_timings_import.sh > /home/tableau_srv/scripts/import.log 2> /home/tableau_srv/scripts/import.err
+
   - name: DNF Install Tableau - Tableau Server
     dnf:
       name:
