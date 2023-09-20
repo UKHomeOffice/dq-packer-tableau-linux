@@ -1,0 +1,16 @@
+dqusers:
+  - name   : sarunachalam
+    userno : 10 
+    pubkey :  "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCttnfv80RJlOY6Pfc4qW7lJeBGprml6fcK5oURRJ3i3fUiOJT0qChdBptL6BsvANjuQ8bpLDrjP5eoswXf7y5R9uOMAPUsogbQre5LjPFqMQt1sgPn0zjQLLibmqdcyboVRnn77hbIIAFfCDUjRzg94knOnn93MKpSXnuWyOF+jhmMoRN3pWMVTqesmTCEQRo1S2wCNOE8AngOjWWTwu4UOEj4reCQwatoYAGZzqjduZEq4I1QEensxNDZQefjBShucnyR74pycnk4J0JyzV1P6s92hug+JJPNNarfQfu2EMy6dnuQ0dpJmXi59iCL/2nfe+RSwrHEi3jrixx5d/yPFRHzw6ICLCWIhbNUuXwBMydAtX0HqiwNpArinWyyHvcHuslf76zPQrV6MN3F7rZBwiZmqX7R+hQ/pmeFIvVKqHBKxbUT3TiH6hd1/z2ctz2PHqE4Lj3VjtPoeamY+7XaA32k6fJFcwxPAzrE0QrSkv0bHRjv/Je3vKs6y+wx5D8= srikantharunachalam@Srikanths-MacBook-Pro.local" 
+  - name   : irelf
+    userno : 11
+    pubkey :  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA6SpzxD2RjSxu20FZmQRtLLY0Vsk7SddqC5NWbLdp3g ian.relf@digital.homeoffice.gov.uk"  
+  - name   : mmorris
+    userno : 12
+    pubkey :  "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDb6g2LUqJl0nF9AWaW4oS0Zel++fN9ckaHHBlMIwHdMHwBLd/Nqr8i8TeehEVdjiMx3VpWTPWdpqOcEkeakqxqLE68PFSaUgjZhGWU9AzLgJgURM9oUugo1/45aHx4Qz5reXjcXwF+bv9MXU/kzdcxKhG2QLBycZD+EZpi0c93EXDsA8A1IQhRhLKg93gpFLsbZBSAgB7aFj2Z6Zo5/vEMhWuz5C2Laf2IHMBzkxNVjnrLpElEFUg364cb+Y+3c4swDHl85saHcn206vX2YYsdKlxVMGvreJ7VQ72dmRr4VNN7y5cYpoJtl15S24Ih1xVXtQUWxe84FgJhtift6dFYoewpPdHXB3kwVhNnuvXpTsG2Vk9HFnDfZY2yjTay6i3JAFZ8ITRNMTG0bMT5itdzBDoFTMOlQFETZxr7/lTeJqDSKP7UC9EdblQgqs8k+GGNNHiTnkUBxRKjXq1KPIpAcxRWrfKUkWP3qPyMHNHUcJIZnX2FJ6JQ/HH23piPTOM= maxmorris@hodaccadm.local"
+  - name   : mdeerow
+    userno : 13
+    pubkey :  "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhiAmoXF4mIw8IpuZOVRpm8q0633AAn6IBtj5bhCXyUfh5jBlyzNdRwODymtw41cpGMBYBOQrQaBKy7rx7nH4Wb8oNyZ8qNDM3aar3blSozwkoUyNO9WMYe1Xst1UNs7n/CRen7D1Vgynno5HKOQpTOaf99HE2H8iPRR8fl5eVXXkMS+OO8vqjyCXgxasFxqB19KIMkpzy3KbxGOB0uiJmCSQf1pBLCKZmu4l+QaZKpqoNj05aGctKOOaZaojrlMykQNgxlL0YQh22pQO6CO084DZOorV2Qujt6Ohafh1+O6P9lZO3jTGrHFFfDvxjGZm6u7VpiY/txEfeLU1ChJ9b mdeerow@hodqadms-MacBook-Pro-4.local"
+  - name   : aallan
+    userno : 14
+    pubkey :  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF54xHov3boyvwKYto6hfvw+IH0S7pCp/OI81sd+8qgm alastair.allan@homeoffice.gov.uk"
