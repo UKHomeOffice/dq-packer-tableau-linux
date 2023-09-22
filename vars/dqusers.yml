@@ -14,3 +14,9 @@ dqusers:
   - name   : aallan
     userno : 14
     pubkey :  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF54xHov3boyvwKYto6hfvw+IH0S7pCp/OI81sd+8qgm alastair.allan@homeoffice.gov.uk"
+  - name   : hgoswami
+    userno : 15
+    pubkey :  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJypXb2BZMtpGys8WZgsMVJOE8twrj3reP1XqwKcUtDw hemantkumar.goswami@digital.homeoffice.gov.uk"
+  - name   : pmiller
+    userno : 16
+    pubkey :  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJH3MA3DmnGCzsVKWboiomrBMF0CsieXpXgvFnnX0cbX peter.miller@digital.homeoffice.gov.uk"
