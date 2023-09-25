@@ -1,0 +1,42 @@
+#Aliases:
+
+## Networking
+Cmnd_Alias NETWORKING_{{ item.userno }} = /sbin/route, /sbin/ifconfig, /bin/ping, /sbin/dhclient, /usr/bin/net, /sbin/iptables, /sbin/ethtool, /sbin/ifconfig, /sbin/ifenslave, /sbin/ifown, /sbin/ifup
+
+## Installation and management of software
+Cmnd_Alias SOFTWARE_{{ item.userno }} = /bin/bin/dnf
+
+## Services
+Cmnd_Alias SERVICES_{{ item.userno }} = /sbin/service, /sbin/chkconfig
+
+## Updating the locate database
+Cmnd_Alias LOCATE_{{ item.userno }} = /usr/bin/updatedb, /bin/sh, /bin/bash
+
+## Storage
+Cmnd_Alias STORAGE_{{ item.userno }} = /sbin/fdisk, /sbin/sfdisk, /sbin/parted, /sbin/partprobe, /bin/mount, /bin/umount, /sbin/powermt
+
+## Delegating permissions
+Cmnd_Alias DELEGATING_{{ item.userno }} = /usr/sbin/visudo, /bin/chown, /bin/chmod, /bin/chgrp, /usr/sbin/chroot, /usr/bin/su - root
+
+## Processes
+Cmnd_Alias PROCESSES_{{ item.userno }} = /bin/nice, /bin/kill, /usr/bin/kill, /usr/bin/killall
+
+## Drivers
+Cmnd_Alias DRIVERS_{{ item.userno }} = /sbin/modprobe, /sbin/modinfo
+
+#the below line added by Tanveer on 5th March 2013 for testing sudo same as Exadata Test node#
+Cmnd_Alias LOG_VIEWING_{{ item.userno }} = /bin/cat, /bin/more, /bin/grep, /usr/bin/less, /usr/bin/head, /usr/bin/tail
+
+## User Administration
+Cmnd_Alias USERADMINISTRATION_{{ item.userno }} = /usr/sbin/useradd, /usr/sbin/userdel, /usr/sbin/passwd, /usr/sbin/usermod
+
+## Group Administration
+Cmnd_Alias GROUPADMINISTRATION_{{ item.userno }} = /usr/sbin/groupadd, /usr/sbin/groupdel, /usr/sbin/groupmod
+
+## Password Management
+Cmnd_Alias PASSWORDMANAGEMENT_{{ item.userno }} = /usr/sbin/pwconv, /usr/sbin/pwunconv, /usr/sbin/grpconv, /usr/sbin/grpunconv, /usr/bin/chage, /usr/sbin/chpasswd
+
+## Samba Related
+Cmnd_Alias SAMBA_{{ item.userno }} = /usr/sbin/smbd, /usr/bin/smbpasswd, /usr/bin/smbstatus, /usr/bin/smbclient, /usr/bin/smbtree
+
+{{ item.name }}  ALL = NOPASSWD: NETWORKING_{{ item.userno }}, SOFTWARE_{{ item.userno }}, SERVICES_{{ item.userno }}, STORAGE_{{ item.userno }}, DELEGATING_{{ item.userno }}, PROCESSES_{{ item.userno }}, LOCATE_{{ item.userno }}, DRIVERS_{{ item.userno }}, LOG_VIEWING_{{ item.userno }}, USERADMINISTRATION_{{ item.userno }}, GROUPADMINISTRATION_{{ item.userno }}, PASSWORDMANAGEMENT_{{ item.userno }}, SAMBA_{{ item.userno }}
