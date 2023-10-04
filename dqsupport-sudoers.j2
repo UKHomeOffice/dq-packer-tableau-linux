@@ -16,7 +16,7 @@ Cmnd_Alias LOCATE_{{ item.userno }} = /usr/bin/updatedb, /bin/sh, /bin/bash
 Cmnd_Alias STORAGE_{{ item.userno }} = /sbin/fdisk, /sbin/sfdisk, /sbin/parted, /sbin/partprobe, /bin/mount, /bin/umount, /sbin/powermt
 
 ## Delegating permissions
-Cmnd_Alias DELEGATING_{{ item.userno }} = /usr/sbin/visudo, /bin/chown, /bin/chmod, /bin/chgrp, /usr/sbin/chroot, /usr/bin/su - root
+Cmnd_Alias DELEGATING_{{ item.userno }} = /usr/sbin/visudo, /bin/chown, /bin/chmod, /bin/chgrp, /usr/sbin/chroot, /usr/bin/su - tableau_srv
 
 ## Processes
 Cmnd_Alias PROCESSES_{{ item.userno }} = /bin/nice, /bin/kill, /usr/bin/kill, /usr/bin/killall
@@ -36,7 +36,4 @@ Cmnd_Alias GROUPADMINISTRATION_{{ item.userno }} = /usr/sbin/groupadd, /usr/sbin
 ## Password Management
 Cmnd_Alias PASSWORDMANAGEMENT_{{ item.userno }} = /usr/sbin/pwconv, /usr/sbin/pwunconv, /usr/sbin/grpconv, /usr/sbin/grpunconv, /usr/bin/chage, /usr/sbin/chpasswd
 
-## Samba Related
-Cmnd_Alias SAMBA_{{ item.userno }} = /usr/sbin/smbd, /usr/bin/smbpasswd, /usr/bin/smbstatus, /usr/bin/smbclient, /usr/bin/smbtree
-
-{{ item.name }}  ALL = NOPASSWD: NETWORKING_{{ item.userno }}, SOFTWARE_{{ item.userno }}, SERVICES_{{ item.userno }}, STORAGE_{{ item.userno }}, DELEGATING_{{ item.userno }}, PROCESSES_{{ item.userno }}, LOCATE_{{ item.userno }}, DRIVERS_{{ item.userno }}, LOG_VIEWING_{{ item.userno }}, USERADMINISTRATION_{{ item.userno }}, GROUPADMINISTRATION_{{ item.userno }}, PASSWORDMANAGEMENT_{{ item.userno }}, SAMBA_{{ item.userno }}
+{{ item.name }}  ALL = NOPASSWD: NETWORKING_{{ item.userno }}, SOFTWARE_{{ item.userno }}, SERVICES_{{ item.userno }}, STORAGE_{{ item.userno }}, DELEGATING_{{ item.userno }}, PROCESSES_{{ item.userno }}, LOCATE_{{ item.userno }}, DRIVERS_{{ item.userno }}, LOG_VIEWING_{{ item.userno }}, USERADMINISTRATION_{{ item.userno }}, GROUPADMINISTRATION_{{ item.userno }}, PASSWORDMANAGEMENT_{{ item.userno }}
