@@ -15,9 +15,9 @@
   - name: setup ssh pub key for abv defined users  
     authorized_key:
         user: '{{ item.name }}'
-        state: present
-        key: '{{ item.pubkey }}'
-    with_items: "{{ dqusers }}"     
+        key: "{{ item.pubkeys | join("\n")  }}"
+        state: "replace_all" 
+    with_items: "{{ dqusers }}"
 
   - name: deploy sudoers file
     template:
