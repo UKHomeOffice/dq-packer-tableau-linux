@@ -6,19 +6,25 @@ dqusers:
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCzx7k0I5Oxr0hJgnpYFTSRmr22ioWr2cF6a3VNkShjOb5L0QcrmDviVde7FS/Bm0g+1HhkSEP53o0pDmNazeQgJT0vsnXuR7faP4K5I2WvHoivSRNAdQfTvFhP+EQmuNFwmYScALbuudfXdohzD8lGFlbWQ9NCzHk1sXCfCXPqzi09t6cSjc0ac3sHw43FN5PXZD6F+vWgq6qrBdg2eKBXsOlIp4im4v+HLKkIC166+s9oP+IZzF/7wlgewF+I6lWhznkd5/s24IssU7gz0QczfwDYz6aDX5xvHsnSD80EM86Q+4+IbiXYvCWI8X0NNygoTjlLm4USfJqd5Hx1kUAbziNx8tKCiTE3l3VKbbQsXl5FtcuxZlJ/rKU4M1rqhMacGN+x0HpQ2XI0Y4Uvcjb0D5ZpuMXFVBLVAOGlWzqVztvRjI+c0umUJ+CxheWkmrpWR86tRHGU8O4I/ApsVcQbWMOguO44OuSmHAZDSUwy39cJeXAmmQmPcwIWb2IsZBk= devops@DAS01477.local"
   - name   : irelf
     userno : 11
-    pubkey :  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA6SpzxD2RjSxu20FZmQRtLLY0Vsk7SddqC5NWbLdp3g ian.relf@digital.homeoffice.gov.uk"  
+    pubkey :  
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA6SpzxD2RjSxu20FZmQRtLLY0Vsk7SddqC5NWbLdp3g ian.relf@digital.homeoffice.gov.uk"  
   - name   : mmorris
     userno : 12
-    pubkey :  "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDb6g2LUqJl0nF9AWaW4oS0Zel++fN9ckaHHBlMIwHdMHwBLd/Nqr8i8TeehEVdjiMx3VpWTPWdpqOcEkeakqxqLE68PFSaUgjZhGWU9AzLgJgURM9oUugo1/45aHx4Qz5reXjcXwF+bv9MXU/kzdcxKhG2QLBycZD+EZpi0c93EXDsA8A1IQhRhLKg93gpFLsbZBSAgB7aFj2Z6Zo5/vEMhWuz5C2Laf2IHMBzkxNVjnrLpElEFUg364cb+Y+3c4swDHl85saHcn206vX2YYsdKlxVMGvreJ7VQ72dmRr4VNN7y5cYpoJtl15S24Ih1xVXtQUWxe84FgJhtift6dFYoewpPdHXB3kwVhNnuvXpTsG2Vk9HFnDfZY2yjTay6i3JAFZ8ITRNMTG0bMT5itdzBDoFTMOlQFETZxr7/lTeJqDSKP7UC9EdblQgqs8k+GGNNHiTnkUBxRKjXq1KPIpAcxRWrfKUkWP3qPyMHNHUcJIZnX2FJ6JQ/HH23piPTOM= maxmorris@hodaccadm.local"
+    pubkey :  
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDb6g2LUqJl0nF9AWaW4oS0Zel++fN9ckaHHBlMIwHdMHwBLd/Nqr8i8TeehEVdjiMx3VpWTPWdpqOcEkeakqxqLE68PFSaUgjZhGWU9AzLgJgURM9oUugo1/45aHx4Qz5reXjcXwF+bv9MXU/kzdcxKhG2QLBycZD+EZpi0c93EXDsA8A1IQhRhLKg93gpFLsbZBSAgB7aFj2Z6Zo5/vEMhWuz5C2Laf2IHMBzkxNVjnrLpElEFUg364cb+Y+3c4swDHl85saHcn206vX2YYsdKlxVMGvreJ7VQ72dmRr4VNN7y5cYpoJtl15S24Ih1xVXtQUWxe84FgJhtift6dFYoewpPdHXB3kwVhNnuvXpTsG2Vk9HFnDfZY2yjTay6i3JAFZ8ITRNMTG0bMT5itdzBDoFTMOlQFETZxr7/lTeJqDSKP7UC9EdblQgqs8k+GGNNHiTnkUBxRKjXq1KPIpAcxRWrfKUkWP3qPyMHNHUcJIZnX2FJ6JQ/HH23piPTOM= maxmorris@hodaccadm.local"
   - name   : mdeerow
     userno : 13
-    pubkey :  "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhiAmoXF4mIw8IpuZOVRpm8q0633AAn6IBtj5bhCXyUfh5jBlyzNdRwODymtw41cpGMBYBOQrQaBKy7rx7nH4Wb8oNyZ8qNDM3aar3blSozwkoUyNO9WMYe1Xst1UNs7n/CRen7D1Vgynno5HKOQpTOaf99HE2H8iPRR8fl5eVXXkMS+OO8vqjyCXgxasFxqB19KIMkpzy3KbxGOB0uiJmCSQf1pBLCKZmu4l+QaZKpqoNj05aGctKOOaZaojrlMykQNgxlL0YQh22pQO6CO084DZOorV2Qujt6Ohafh1+O6P9lZO3jTGrHFFfDvxjGZm6u7VpiY/txEfeLU1ChJ9b mdeerow@hodqadms-MacBook-Pro-4.local"
+    pubkey :  
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhiAmoXF4mIw8IpuZOVRpm8q0633AAn6IBtj5bhCXyUfh5jBlyzNdRwODymtw41cpGMBYBOQrQaBKy7rx7nH4Wb8oNyZ8qNDM3aar3blSozwkoUyNO9WMYe1Xst1UNs7n/CRen7D1Vgynno5HKOQpTOaf99HE2H8iPRR8fl5eVXXkMS+OO8vqjyCXgxasFxqB19KIMkpzy3KbxGOB0uiJmCSQf1pBLCKZmu4l+QaZKpqoNj05aGctKOOaZaojrlMykQNgxlL0YQh22pQO6CO084DZOorV2Qujt6Ohafh1+O6P9lZO3jTGrHFFfDvxjGZm6u7VpiY/txEfeLU1ChJ9b mdeerow@hodqadms-MacBook-Pro-4.local"
   - name   : aallan
     userno : 14
-    pubkey :  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF54xHov3boyvwKYto6hfvw+IH0S7pCp/OI81sd+8qgm alastair.allan@homeoffice.gov.uk"
+    pubkey :  
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF54xHov3boyvwKYto6hfvw+IH0S7pCp/OI81sd+8qgm alastair.allan@homeoffice.gov.uk"
   - name   : hgoswami
     userno : 15
-    pubkey :  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJypXb2BZMtpGys8WZgsMVJOE8twrj3reP1XqwKcUtDw hemantkumar.goswami@digital.homeoffice.gov.uk"
+    pubkey :  
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJypXb2BZMtpGys8WZgsMVJOE8twrj3reP1XqwKcUtDw hemantkumar.goswami@digital.homeoffice.gov.uk"
   - name   : pmiller
     userno : 16
-    pubkey :  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJH3MA3DmnGCzsVKWboiomrBMF0CsieXpXgvFnnX0cbX peter.miller@digital.homeoffice.gov.uk"
+    pubkey :  
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJH3MA3DmnGCzsVKWboiomrBMF0CsieXpXgvFnnX0cbX peter.miller@digital.homeoffice.gov.uk"
