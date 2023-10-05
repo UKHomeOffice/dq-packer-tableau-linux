@@ -3,7 +3,7 @@ dqusers:
     userno : 10 
     pubkey :  
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCttnfv80RJlOY6Pfc4qW7lJeBGprml6fcK5oURRJ3i3fUiOJT0qChdBptL6BsvANjuQ8bpLDrjP5eoswXf7y5R9uOMAPUsogbQre5LjPFqMQt1sgPn0zjQLLibmqdcyboVRnn77hbIIAFfCDUjRzg94knOnn93MKpSXnuWyOF+jhmMoRN3pWMVTqesmTCEQRo1S2wCNOE8AngOjWWTwu4UOEj4reCQwatoYAGZzqjduZEq4I1QEensxNDZQefjBShucnyR74pycnk4J0JyzV1P6s92hug+JJPNNarfQfu2EMy6dnuQ0dpJmXi59iCL/2nfe+RSwrHEi3jrixx5d/yPFRHzw6ICLCWIhbNUuXwBMydAtX0HqiwNpArinWyyHvcHuslf76zPQrV6MN3F7rZBwiZmqX7R+hQ/pmeFIvVKqHBKxbUT3TiH6hd1/z2ctz2PHqE4Lj3VjtPoeamY+7XaA32k6fJFcwxPAzrE0QrSkv0bHRjv/Je3vKs6y+wx5D8= srikantharunachalam@Srikanths-MacBook-Pro.local" 
-        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDLp2sVEdi1vnXAH0EsD/Crd/A+YYvNUfz6FuiUJ1vhOM7IuGwP/MKxguj2kMBYjpSFU8uTWnQnQwuwSDjKHesx/AtGLiOEbxNtdfjCl+xb2qwcwE614PCuqrG8xLAiNqitKxYewBYUQrATCQXLSiVwwE35WQi0fVw0sTYdJ5iB7+sqwY6Ln6YKbvpQFYgNr8WLqMUsLesgWVKfxIQrS9aszR60cu47vpybe2LTaYZkFZoiqRrXya1KiQXWFlDmzQt1VfFL/6yfSC81iMXmsKpwJN82guXe1AXqV5vkTOOWRo+4tQWCOHNCPf9vGO8AUKm93vp64elBdm/7xi1OpVXp DEV\d-arunacs@a-20dy2jhpigyeq"
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDLp2sVEdi1vnXAH0EsD/Crd/A+YYvNUfz6FuiUJ1vhOM7IuGwP/MKxguj2kMBYjpSFU8uTWnQnQwuwSDjKHesx/AtGLiOEbxNtdfjCl+xb2qwcwE614PCuqrG8xLAiNqitKxYewBYUQrATCQXLSiVwwE35WQi0fVw0sTYdJ5iB7+sqwY6Ln6YKbvpQFYgNr8WLqMUsLesgWVKfxIQrS9aszR60cu47vpybe2LTaYZkFZoiqRrXya1KiQXWFlDmzQt1VfFL/6yfSC81iMXmsKpwJN82guXe1AXqV5vkTOOWRo+4tQWCOHNCPf9vGO8AUKm93vp64elBdm/7xi1OpVXp DEV\\d-arunacs@a-20dy2jhpigyeq"
   - name   : irelf
     userno : 11
     pubkey :  
