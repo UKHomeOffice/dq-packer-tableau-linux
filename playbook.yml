@@ -3,13 +3,14 @@
   hosts: all
   become: true
   
-- name: Get AWS-CLI
-  shell: |
+tasks:  
+  - name: Get AWS-CLI
+    shell: |
       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       unzip awscliv2.zip
       sudo ./aws/install
       
-  tasks:
+
   - name: Get dquser file from s3
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dqusers.yml /vars/dqusers.yml
