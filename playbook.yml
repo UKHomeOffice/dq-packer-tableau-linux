@@ -35,6 +35,7 @@
       unzip awscliv2.zip
       ./aws/install
     become: true
+    become_user: root
     
   - name: Create python link
     file:
