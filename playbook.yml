@@ -4,6 +4,31 @@
   become: true
   
   tasks:
+
+    
+  - name: Set timezone to Europe/London
+    timezone:
+      name: Europe/London
+
+  - name: enable rc.local service
+    shell:
+       systemctl enable rc-local.service && systemctl start rc-local.service
+
+  - name: perform repo sed replace
+    shell:
+       sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
+
+
+  - name: DNF Install Dependencies
+    dnf: name={{ item }}
+    with_items:
+      - zip
+      - unzip
+      - git
+      - postgresql
+      - python39
+    become: true
+
   - name: Get AWS-CLI
     shell: |
       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -41,29 +66,6 @@
     become: true
     become_user: root
     
-  - name: Set timezone to Europe/London
-    timezone:
-      name: Europe/London
-
-  - name: enable rc.local service
-    shell:
-       systemctl enable rc-local.service && systemctl start rc-local.service
-
-  - name: perform repo sed replace
-    shell:
-       sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
-
-
-  - name: DNF Install Dependencies
-    dnf: name={{ item }}
-    with_items:
-      - zip
-      - unzip
-      - git
-      - postgresql
-      - python39
-    become: true
-      
   - name: Create python link
     file:
       src: /usr/bin/python3.9
