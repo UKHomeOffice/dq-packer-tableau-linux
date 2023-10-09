@@ -33,9 +33,16 @@
     shell: |
       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       unzip awscliv2.zip
-      sudo ./aws/install
+      ./aws/install
+    become: true
+    
+  - name: Create python link
+    file:
+      src: /usr/bin/python3.9
+      dest: /usr/bin/python
+      state: link
+      force: true
       
-
   - name: Get dquser file from s3
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dqusers.yml vars/dqusers.yml
@@ -65,13 +72,6 @@
     with_items: "{{ dqusers }}" 
     become: true
     become_user: root
-    
-  - name: Create python link
-    file:
-      src: /usr/bin/python3.9
-      dest: /usr/bin/python
-      state: link
-      force: true
 
   - name: Get Tableau files from DQ-config-bucket
     shell: |
