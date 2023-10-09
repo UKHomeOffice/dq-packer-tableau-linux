@@ -25,7 +25,7 @@
     
 
   - name: Include vars file
-    include_vars: vars/dqusers.yml
+    include_vars: /vars/dqusers.yml
     
   - name: Create users for dqsupport members
     user:
