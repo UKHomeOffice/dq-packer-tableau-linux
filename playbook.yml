@@ -3,7 +3,15 @@
   hosts: all
   become: true
   
-tasks:  
+  tasks:
+  - name: Create users for dqsupport members
+    user:
+        name: "{{ item.name }}"
+        shell: /bin/bash
+        createhome: yes                    
+    with_items: "{{ dqusers }}"   
+    
+
   - name: Get AWS-CLI
     shell: |
       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
