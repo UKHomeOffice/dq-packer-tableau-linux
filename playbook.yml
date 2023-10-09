@@ -2,19 +2,15 @@
 - name: Build Tableau Linux Server
   hosts: all
   become: true
-
-  - name: Get dev file
-  s3:
-    bucket: bucket_name
-    object: object_name
-    dest: vars/dev.yml
-    mode: get
-    aws_access_key: "{{ s3.aws_access_key }}"
-    aws_access_key: "{{ s3.aws_secret_key }}"
-  delegate_to: localhost
   
+- name: Get AWS-CLI
+  shell: |
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      sudo ./aws/install
+      
   tasks:
-  - name: Get dev file
+  - name: Get dquser file from s3
     shell: |
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dqusers.yml /vars/dqusers.yml
     
@@ -73,12 +69,6 @@
       dest: /usr/bin/python
       state: link
       force: true
-
-  - name: Get AWS-CLI
-    shell: |
-      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-      unzip awscliv2.zip
-      sudo ./aws/install
 
   - name: Get Tableau files from DQ-config-bucket
     shell: |
