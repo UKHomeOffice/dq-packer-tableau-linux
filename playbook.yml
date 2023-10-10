@@ -1,19 +1,4 @@
----
-- hosts: localhost
-  gather_facts: False
-  tasks:
-  - name: install boto libraries
-    pip:
-        - boto3
-        - botocore
-        
-  - name: Pull variable file from S3
-    aws_s3:
-        bucket: dq-config-bucket
-        object: dqusers.yml
-        dest: /tmp/dqusers.yml
-        mode: get
-        
+---        
 - name: Build Tableau Linux Server        
   hosts: all
   become: true
@@ -58,7 +43,26 @@
       dest: /usr/bin/python
       state: link
       force: true
-             
+      
+  - name: install boto libraries
+    pip:
+        - boto3
+        - botocore
+        
+  - name: Pull variable file from S3
+    aws_s3:
+        bucket: dq-config-bucket
+        object: dqusers.yml
+        dest: /tmp/dqusers.yml
+        mode: get
+    delegate_to: localhost
+
+  - name: Load yaml file to create dqusers vars
+    include_vars:
+        dir: "/tmp"
+        files_matching: "^dqusers.yml$"
+        name: dqusers   
+        
   - name: Create users for dqsupport members
     user:
         name: "{{ item.name }}"
