@@ -48,7 +48,13 @@
       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dqusers.yml /tmp/dqusers.yml
     become: true
     become_user: root
-        
+
+
+  - name: ansible copy file from remote to local.
+    fetch:
+     src: /tmp/dqusers.yml
+     dest: /tmp/dqusers.yml
+    
   - set_fact:
       dqusers: "{{ dqusers }} + [ '{{ item }}' ]"
     with_lines: cat /tmp/dqusers.yml    
