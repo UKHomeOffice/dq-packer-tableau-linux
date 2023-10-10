@@ -42,13 +42,15 @@
       state: link
       force: true
       
-  - name: PIP install band boto3
+  - name: PIP install botocore and boto3
     pip:
       name:
           - botocore
           - boto3
       executable: pip3.9
-      
+    become: true
+    become_user: root  
+    
   - name: Pull variable file from S3
     aws_s3:
         bucket: dq-config-bucket
