@@ -53,15 +53,13 @@
     
   - name: Pull variable file from S3
     shell: |
-       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dqusers.yml /tmp/dqusers.yml
+       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dqusers.yml ./var/dqusers.yml
     become: true
     become_user: root      
 
-  - name: Load yaml file to create dqusers vars
+  - name: Read dqusers yaml
     include_vars:
-        dir: "/tmp"
-        files_matching: "^dqusers.yml$"
-        name: dqusers   
+      file: ./var/dqusers.yml
         
   - name: Create users for dqsupport members
     user:
