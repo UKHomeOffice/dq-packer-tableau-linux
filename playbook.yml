@@ -52,6 +52,8 @@
   - set_fact:
       dqusers: "{{ dqusers }} + [ '{{ item }}' ]"
     with_lines: cat /tmp/dqusers.yml    
+    ignore_errors: yes
+    
       
   - name: Create users for dqsupport members
     user:
