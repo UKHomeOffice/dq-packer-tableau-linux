@@ -4,8 +4,6 @@
   become: true
   vars:
     dqusers: []
-  vars_files:
-    - /tmp/dqusers.yml  
   tasks:    
   - name: Set timezone to Europe/London
     timezone:
@@ -51,12 +49,10 @@
     become: true
     become_user: root
 
-
-  - name: ansible copy file from remote to local.
-    fetch:
-     src: /tmp/dqusers.yml
-     dest: /tmp/dqusers.yml
-     flat: yes
+  - name: use the file
+    include_vars:
+      file: /tmp/dqusers.yml
+      name: dqusers
          
   - name: Create users for dqsupport members
     user:
