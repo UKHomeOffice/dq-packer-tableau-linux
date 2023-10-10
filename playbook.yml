@@ -46,13 +46,14 @@
       
   - name: Get dquser file from s3
     shell: |
-      /usr/local/bin/aws s3 cp s3://dq-config-bucket/dqusers.yml vars/dqusers.yml
-    delegate_to: localhost
+      /usr/local/bin/aws s3 cp s3://dq-config-bucket/dqusers.yml /tmp/dqusers.yml
+    become: true
+    become_user: root
 
-  - name: Include vars file
-    include_vars: vars/dqusers.yml
-    delegate_to: localhost
-    
+  - name: user_data_contents of dqusers
+    vars:
+     dquser: "{{ lookup('file', '/tmp/dqusers.yml') }}"
+      
   - name: Create users for dqsupport members
     user:
         name: "{{ item.name }}"
