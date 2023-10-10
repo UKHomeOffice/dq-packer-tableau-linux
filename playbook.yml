@@ -4,6 +4,8 @@
   become: true
   vars:
     dqusers: []
+  vars_files:
+    - /tmp/dqusers.yml  
   tasks:    
   - name: Set timezone to Europe/London
     timezone:
@@ -55,11 +57,7 @@
      src: /tmp/dqusers.yml
      dest: /tmp/dqusers.yml
      flat: yes
-     
-  - set_fact:
-      dqusers: "{{ dqusers }} + [ '{{ item }}' ]"
-    with_lines: "cat /tmp/dqusers.yml"    
-    
+         
   - name: Create users for dqsupport members
     user:
         name: "{{ item.name }}"
