@@ -1,32 +1,9 @@
----
-- name: Build Tableau Linux Server
+---        
+- name: Build Tableau Linux Server        
   hosts: all
   become: true
-  vars_files:
-    - ./vars/dqusers.yml
-  tasks:
-  - name: Create users for dqsupport members
-    user:
-        name: "{{ item.name }}"
-        shell: /bin/bash
-        createhome: yes                    
-    with_items: "{{ dqusers }}"      
 
-  - name: setup ssh pub key for abv defined users  
-    authorized_key:
-        user: '{{ item.name }}'
-        key: '{{ item.pubkey | join("\n")  }}'
-        state: "present" 
-    with_items: "{{ dqusers }}"
-
-  - name: deploy sudoers file
-    template:
-        src: dqsupport-sudoers.j2
-        dest: /etc/sudoers.d/{{ item.userno }}-{{ item.name }}-user
-    with_items: "{{ dqusers }}" 
-    become: true
-    become_user: root
-    
+  tasks:    
   - name: Set timezone to Europe/London
     timezone:
       name: Europe/London
@@ -49,19 +26,68 @@
       - postgresql
       - python39
     become: true
-      
+
+  - name: Get AWS-CLI
+    shell: |
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      ./aws/install
+    become: true
+    become_user: root
+    
   - name: Create python link
     file:
       src: /usr/bin/python3.9
       dest: /usr/bin/python
       state: link
       force: true
-
-  - name: Get AWS-CLI
+      
+  - name: PIP install botocore and boto3
+    pip:
+      name:
+          - botocore
+          - boto3
+      executable: pip3.9
+    become: true
+    become_user: root  
+    
+  - name: Pull variable file from S3
     shell: |
-      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-      unzip awscliv2.zip
-      sudo ./aws/install
+       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dqusers.yml /tmp/dqusers.yml
+    become: true
+    become_user: root      
+
+  - name: Use fetch module for this task  
+    fetch:
+          src: "/tmp/dqusers.yml"
+          dest: ./var/dqusers.yml
+          flat: yes      
+
+  - name: Read dqusers yaml
+    include_vars:
+      file: ./var/dqusers.yml
+        
+  - name: Create users for dqsupport members
+    user:
+        name: "{{ item.name }}"
+        shell: /bin/bash
+        createhome: yes                    
+    with_items: "{{ dqusers }}"      
+
+  - name: setup ssh pub key for abv defined users  
+    authorized_key:
+        user: '{{ item.name }}'
+        key: '{{ item.pubkey | join("\n")  }}'
+        state: "present" 
+    with_items: "{{ dqusers }}"
+
+  - name: deploy sudoers file
+    template:
+        src: dqsupport-sudoers.j2
+        dest: /etc/sudoers.d/{{ item.userno }}-{{ item.name }}-user
+    with_items: "{{ dqusers }}" 
+    become: true
+    become_user: root
 
   - name: Get Tableau files from DQ-config-bucket
     shell: |
