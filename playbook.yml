@@ -2,13 +2,13 @@
 - hosts: localhost
   gather_facts: False
   tasks:
-    - name: install boto libraries
-      pip:
+  - name: install boto libraries
+    pip:
         - boto3
         - botocore
         
-    - name: Pull variable file from S3
-      aws_s3:
+  - name: Pull variable file from S3
+    aws_s3:
         bucket: dq-config-bucket
         object: dqusers.yml
         dest: /tmp/dqusers.yml
