@@ -52,14 +52,10 @@
     become_user: root  
     
   - name: Pull variable file from S3
-    aws_s3:
-        bucket: dq-config-bucket
-        object: dqusers.yml
-        dest: /tmp/dqusers.yml
-        mode: get
+    shell: |
+       /usr/local/bin/aws s3 cp s3://dq-config-bucket/dqusers.yml /tmp/dqusers.yml
     become: true
-    become_user: root         
-    delegate_to: localhost
+    become_user: root      
 
   - name: Load yaml file to create dqusers vars
     include_vars:
