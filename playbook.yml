@@ -77,7 +77,7 @@
   - name: setup ssh pub key for abv defined users  
     authorized_key:
         user: '{{ item.name }}'
-        key: '{{ item.pubkey | join("\n")  }}'
+        key: "{{ item.pubkey | join('\n')  }}"
         state: "present" 
     with_items: "{{ dqusers }}"
 
