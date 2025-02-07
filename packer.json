@@ -51,6 +51,7 @@
       "ssh_username": "ec2-user",
       "instance_type": "m5.4xlarge",
       "ami_name": "dq-tableau-linux-{{user `drone_build_number`}}",
+      "encrypt_boot": false,
       "metadata_options": {
         "http_endpoint": "enabled",
         "http_tokens": "required",
