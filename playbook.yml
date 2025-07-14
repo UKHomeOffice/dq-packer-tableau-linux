@@ -2,6 +2,8 @@
 - name: Build Tableau Linux Server        
   hosts: all
   become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3.11
 
   tasks:    
   - name: Set timezone to Europe/London
@@ -39,7 +41,7 @@
   - name: Create python link
     file:
       src: /usr/bin/python3.11
-      dest: /usr/bin/python3
+      dest: /usr/bin/python
       state: link
       force: true
       
