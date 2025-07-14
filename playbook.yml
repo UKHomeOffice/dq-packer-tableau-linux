@@ -24,7 +24,8 @@
       - unzip
       - git
       - postgresql
-      - python311
+      - python3.11
+      - python3.11-pip
     become: true
 
   - name: Get AWS-CLI
