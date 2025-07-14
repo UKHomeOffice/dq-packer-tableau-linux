@@ -8,8 +8,8 @@ platform:
 
 global-variables:
   vault-image: &vault-image  docker.digital.homeoffice.gov.uk/dq/dq-vault-awscli:1.43
-  packer-image: &packer-image quay.io/ukhomeofficedigital/dq-packer-ansible:b-193
-  copy-image: &copy-image quay.io/ukhomeofficedigital/dq-packer-encrypt-copy:b-185
+  packer-image: &packer-image quay.io/ukhomeofficedigital/dq-packer-ansible
+  copy-image: &copy-image quay.io/ukhomeofficedigital/dq-packer-encrypt-copy
 
 x-anchors:
   retrieve-deployment-aws-key: &retrieve-deployment-aws-key
