@@ -26,8 +26,9 @@
       - unzip
       - git
       - postgresql
-      - python3.11
-      - python3.11-pip
+      # - python3.11
+      # - python3.11-pip
+      - python39
     become: true
 
   - name: Get AWS-CLI
@@ -40,7 +41,7 @@
     
   - name: Create python link
     file:
-      src: /usr/bin/python3.11
+      src: /usr/bin/python3.9
       dest: /usr/bin/python
       state: link
       force: true
@@ -50,7 +51,7 @@
       name:
           - botocore
           - boto3
-      executable: pip3.11
+      executable: pip3.9
     become: true
     become_user: root  
     
