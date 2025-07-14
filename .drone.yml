@@ -81,7 +81,7 @@ steps:
     - export HOME=/home/packer
     - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
     - echo "=== PATH and Python/Ansible Diagnostics ==="
-    - echo "PATH: $PATH"
+    - echo "$PATH"
     - which python
     - python --version
     - which python3
