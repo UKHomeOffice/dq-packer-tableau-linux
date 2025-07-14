@@ -2,6 +2,8 @@
 - name: Build Tableau Linux Server        
   hosts: all
   become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python
 
   tasks:    
   - name: Set timezone to Europe/London
