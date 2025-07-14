@@ -80,16 +80,6 @@ steps:
     - source ./set_aws_secrets_ci.sh
     - export HOME=/home/packer
     - export DRONE_BUILD_NUMBER=$${DRONE_BUILD_NUMBER}
-    - echo "=== PATH and Python/Ansible Diagnostics ==="
-    - echo "$PATH"
-    - which python
-    - python --version
-    - which python3
-    - python3 --version
-    - which ansible
-    - ansible --version
-    - env | grep -i venv
-    - echo "==========================================="
     - packer --version
     - packer build packer.json
   when:
