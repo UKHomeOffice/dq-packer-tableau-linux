@@ -2,8 +2,6 @@
 - name: Build Tableau Linux Server        
   hosts: all
   become: true
-  vars:
-    ansible_python_interpreter: /usr/bin/python3.11
 
   tasks:    
   - name: Set timezone to Europe/London
@@ -38,12 +36,12 @@
     become: true
     become_user: root
     
-  # - name: Create python link
-  #   file:
-  #     src: /usr/bin/python3.11
-  #     dest: /usr/bin/python
-  #     state: link
-  #     force: true
+  - name: Create python link
+    file:
+      src: /usr/bin/python3.11
+      dest: /usr/bin/python3
+      state: link
+      force: true
       
   - name: PIP install botocore and boto3
     pip:
