@@ -65,6 +65,14 @@
   ],
   "provisioners": [
     {
+      "type": "shell",
+      "inline": [
+        "sudo dnf install -y python3.9",
+        "sudo ln -sf /usr/bin/python3.9 /usr/bin/python3",
+        "sudo ln -sf /usr/bin/python3.9 /usr/bin/python"
+      ]
+    },
+    {
       "type": "ansible",
       "playbook_file": "./playbook.yml",
       "extra_arguments": [
