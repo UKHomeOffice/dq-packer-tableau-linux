@@ -2,8 +2,8 @@
 - name: Build Tableau Linux Server        
   hosts: all
   become: true
-  vars:
-    ansible_python_interpreter: /usr/libexec/platform-python
+  # vars:
+  #   ansible_python_interpreter: /usr/libexec/platform-python
 
   tasks:    
   - name: Set timezone to Europe/London
@@ -19,15 +19,15 @@
        sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
 
 
-  - name: DNF Install Dependencies
-    dnf: name={{ item }}
-    with_items:
-      - zip
-      - unzip
-      - git
-      - postgresql
-      - python39
-    become: true
+  # - name: DNF Install Dependencies
+  #   dnf: name={{ item }}
+  #   with_items:
+  #     - zip
+  #     - unzip
+  #     - git
+  #     - postgresql
+  #     - python39
+  #   become: true
 
   - name: Get AWS-CLI
     shell: |
@@ -37,12 +37,12 @@
     become: true
     become_user: root
     
-  - name: Create python link
-    file:
-      src: /usr/bin/python3.9
-      dest: /usr/bin/python
-      state: link
-      force: true
+  # - name: Create python link
+  #   file:
+  #     src: /usr/bin/python3.9
+  #     dest: /usr/bin/python
+  #     state: link
+  #     force: true
       
   - name: PIP install botocore and boto3
     pip:
