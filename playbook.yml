@@ -2,6 +2,8 @@
 - name: Build Tableau Linux Server        
   hosts: all
   become: true
+  # vars:
+  #   ansible_python_interpreter: /usr/libexec/platform-python
 
   tasks:    
   - name: Set timezone to Europe/London
@@ -17,15 +19,15 @@
        sed -i 's/REGION/eu-west-2/' /etc/yum.repos.d/redhat-rhui*.repo
 
 
-  - name: DNF Install Dependencies
-    dnf: name={{ item }}
-    with_items:
-      - zip
-      - unzip
-      - git
-      - postgresql
-      - python39
-    become: true
+  # - name: DNF Install Dependencies
+  #   dnf: name={{ item }}
+  #   with_items:
+  #     - zip
+  #     - unzip
+  #     - git
+  #     - postgresql
+  #     - python39
+  #   become: true
 
   - name: Get AWS-CLI
     shell: |
@@ -35,12 +37,12 @@
     become: true
     become_user: root
     
-  - name: Create python link
-    file:
-      src: /usr/bin/python3.9
-      dest: /usr/bin/python
-      state: link
-      force: true
+  # - name: Create python link
+  #   file:
+  #     src: /usr/bin/python3.9
+  #     dest: /usr/bin/python
+  #     state: link
+  #     force: true
       
   - name: PIP install botocore and boto3
     pip:
@@ -152,11 +154,14 @@
       hour: 11
       job: source $HOME/.bashrc; /home/tableau_srv/scripts/extract_timings_import.sh > /home/tableau_srv/scripts/import.log 2> /home/tableau_srv/scripts/import.err
 
-  - name: DNF Install Tableau - Tableau Server
-    dnf:
-      name:
-        - /tmp/install/tableau-server-gold-master.x86_64.rpm
-      disable_gpg_check: true
+  # - name: DNF Install Tableau - Tableau Server
+  #   dnf:
+  #     name:
+  #       - /tmp/install/tableau-server-gold-master.x86_64.rpm
+  #     disable_gpg_check: true
+
+  - name: Install Tableau Server RPM
+    raw: sudo dnf install -y --nogpgcheck /tmp/install/tableau-server-gold-master.x86_64.rpm
 
   - name: Install the Postgresql & Athena JDBC Driver
     shell: |
@@ -200,11 +205,14 @@
       dest: /tmp/amazon-cloudwatch-agent.rpm
       mode: "+x"
 
-  - name: Install CloudWatch agent (for ec2 alarms)
-    dnf:
-      name: /tmp/amazon-cloudwatch-agent.rpm
-      state: present
-      disable_gpg_check: true
+  # - name: Install CloudWatch agent (for ec2 alarms)
+  #   dnf:
+  #     name: /tmp/amazon-cloudwatch-agent.rpm
+  #     state: present
+  #     disable_gpg_check: true
+
+  - name: Install CloudWatch Agent RPM 
+    raw: sudo dnf install -y --nogpgcheck /tmp/amazon-cloudwatch-agent.rpm
 
   - name: CloudWatch Agent config
     copy:
