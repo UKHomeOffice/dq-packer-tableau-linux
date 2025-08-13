@@ -14,6 +14,7 @@
       "secret_key": "{{user `secret_key`}}",
       "region": "{{user `region`}}",
       "iam_instance_profile": "packer_builder",
+      "temporary_security_group_source_public_ip": true,
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
