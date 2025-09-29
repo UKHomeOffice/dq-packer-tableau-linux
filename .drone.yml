@@ -88,6 +88,35 @@ steps:
   depends_on:
     - retrieve_aws_secrets_ci
 
+- name: share-snapshot
+  image: amazon/aws-cli
+  commands:
+    - source ./set_aws_secrets_ci.sh
+    - |
+      # Get the AMI ID 
+      AMI_INFO=$(aws ec2 describe-images \
+        --owners 093401982388 \
+        --filters "Name=name,Values=dq-tableau-linux-*" \
+        --query 'Images | sort_by(@, &CreationDate)[-1].[ImageId,Name]' \
+        --output text)
+
+      AMI_ID=$(echo "$AMI_INFO" | awk '{print $1}')
+
+      echo "Latest AMI ID found: $AMI_ID"
+
+      # Share each snapshot with target accounts before copying
+      SNAPSHOT_IDS=$(aws ec2 describe-images --image-ids $AMI_ID --query 'Images[0].BlockDeviceMappings[].Ebs.SnapshotId' --output text)
+
+      for SNAPSHOT_ID in $SNAPSHOT_IDS; do
+        echo "Sharing snapshot $SNAPSHOT_ID with accounts notprod and prod"
+        aws ec2 modify-snapshot-attribute --snapshot-id $SNAPSHOT_ID --attribute createVolumePermission --operation-type add --user-ids 483846886818 337779336338
+      done
+  when:
+    event:
+      - push
+  depends_on:
+    - build
+
 - name: retrieve_aws_secrets_np
   pull: if-not-exists
   image: *vault-image
@@ -102,23 +131,72 @@ steps:
     event:
       - push
   depends_on:
-    - build
+    - share-snapshot
 
-- name: packer-copy-notprod
-  pull: always
-  image: *copy-image
+- name: copy-ami-notprod
+  image: amazon/aws-cli
   commands:
-  - source ./set_aws_secrets_np.sh
-  - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
-  - export HOME=/home/packer
-  - packer --version
-  - cd /home/packer
-  - ./build.sh
+    - source ./set_aws_secrets_np.sh
+    - |
+      # Get the AMI ID 
+      AMI_INFO=$(aws ec2 describe-images \
+        --owners 093401982388 \
+        --filters "Name=name,Values=dq-tableau-linux-*" \
+        --query 'Images | sort_by(@, &CreationDate)[-1].[ImageId,Name]' \
+        --output text)
+
+      AMI_ID=$(echo "$AMI_INFO" | awk '{print $1}')
+      AMI_NAME=$(echo "$AMI_INFO" | awk '{print $2}')
+
+      echo "Latest AMI ID found: $AMI_ID"
+      echo "Latest AMI Name found: $AMI_NAME"
+
+      # Proceed with AMI copy
+      COPY_NAME="dq-tableau-linux $DRONE_BUILD_NUMBER copied from [Packer Build] - $AMI_ID"
+
+      aws ec2 copy-image \
+        --source-image-id $AMI_ID \
+        --source-region eu-west-2 \
+        --name "$COPY_NAME" \
+        --description "Copy of CI AMI dq-tableau-linux $DRONE_BUILD_NUMBER ($AMI_ID)"
+
+      echo "Waiting for $AMI_ID to become available..."
+
+      aws ec2 wait image-available --image-ids $AMI_ID
+
+      echo "$AMI_ID is now available"
+
+      echo "Waiting for $AMI_ID snapshots to become available..."
+
+      SNAPSHOT_IDS=$(aws ec2 describe-images --image-ids $AMI_ID --query 'Images[0].BlockDeviceMappings[].Ebs.SnapshotId' --output text)
+
+      for SNAPSHOT_ID in $SNAPSHOT_IDS; do
+        echo "Waiting for snapshot $SNAPSHOT_ID to become available..."
+        aws ec2 wait snapshot-completed --snapshot-ids $SNAPSHOT_ID
+      done
+
+      echo "All snapshots for $AMI_ID are now available!"
   when:
     event:
-    - push
+      - push
   depends_on:
     - retrieve_aws_secrets_np
+
+# - name: packer-copy-notprod
+#   pull: always
+#   image: *copy-image
+#   commands:
+#   - source ./set_aws_secrets_np.sh
+#   - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
+#   - export HOME=/home/packer
+#   - packer --version
+#   - cd /home/packer
+#   - ./build.sh
+#   when:
+#     event:
+#     - push
+#   depends_on:
+#     - retrieve_aws_secrets_np
 
 - name: retrieve_aws_secrets_prod
   pull: if-not-exists
@@ -138,23 +216,74 @@ steps:
   depends_on:
     - build
 
-- name: packer-copy-prod
-  pull: if-not-exists
-  image: *copy-image
+- name: copy-ami-prod
+  image: amazon/aws-cli
   commands:
-  - source ./set_aws_secrets_prod.sh
-  - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
-  - export HOME=/home/packer
-  - packer --version
-  - cd /home/packer
-  - ./build.sh
+    - source ./set_aws_secrets_prod.sh
+    - |
+      # Get the AMI ID 
+      AMI_INFO=$(aws ec2 describe-images \
+        --owners 093401982388 \
+        --filters "Name=name,Values=dq-tableau-linux-*" \
+        --query 'Images | sort_by(@, &CreationDate)[-1].[ImageId,Name]' \
+        --output text)
+
+      AMI_ID=$(echo "$AMI_INFO" | awk '{print $1}')
+      AMI_NAME=$(echo "$AMI_INFO" | awk '{print $2}')
+
+      echo "Latest AMI ID found: $AMI_ID"
+      echo "Latest AMI Name found: $AMI_NAME"
+
+      # Proceed with AMI copy
+      COPY_NAME="$AMI_NAME copied from [Packer Build] - $AMI_ID"
+
+      aws ec2 copy-image \
+        --source-image-id $AMI_ID \
+        --source-region eu-west-2 \
+        --name "$COPY_NAME" \
+        --description "Copy of CI AMI $AMI_NAME ($AMI_ID)
+
+      echo "Waiting for $AMI_ID to become available..."
+
+      aws ec2 wait image-available --image-ids $AMI_ID
+
+      echo "$AMI_ID is now available"
+
+      echo "Waiting for $AMI_ID snapshots to become available..."
+
+      SNAPSHOT_IDS=$(aws ec2 describe-images --image-ids $AMI_ID --query 'Images[0].BlockDeviceMappings[].Ebs.SnapshotId' --output text)
+
+      for SNAPSHOT_ID in $SNAPSHOT_IDS; do
+        echo "Waiting for snapshot $SNAPSHOT_ID to become available..."
+        aws ec2 wait snapshot-completed --snapshot-ids $SNAPSHOT_ID
+      done
+
+      echo "All snapshots for $AMI_ID are now available!"
   when:
-    branch:
-    - master
+    branch: 
+      - master
     event:
-    - push
+      - push
   depends_on:
     - retrieve_aws_secrets_prod
+
+# - name: packer-copy-prod
+#   pull: if-not-exists
+#   image: *copy-image
+#   commands:
+#   - source ./set_aws_secrets_prod.sh
+#   - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
+#   - export HOME=/home/packer
+#   - packer --version
+#   - cd /home/packer
+#   - ./build.sh
+#   when:
+#     branch:
+#     - master
+#     event:
+#     - push
+#   depends_on:
+#     - retrieve_aws_secrets_prod
 
 - name: renew-vault-tokens
   pull: if-not-exists
