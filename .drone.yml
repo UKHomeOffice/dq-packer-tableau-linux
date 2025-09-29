@@ -241,7 +241,7 @@ steps:
         --source-image-id $AMI_ID \
         --source-region eu-west-2 \
         --name "$COPY_NAME" \
-        --description "Copy of CI AMI $AMI_NAME ($AMI_ID)
+        --description "Copy of CI AMI dq-tableau-linux $DRONE_BUILD_NUMBER ($AMI_ID)"
 
       echo "Waiting for $AMI_ID to become available..."
 
