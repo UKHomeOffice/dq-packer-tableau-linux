@@ -150,9 +150,9 @@ steps:
 
       echo "Latest AMI ID found: $AMI_ID"
       echo "Latest AMI Name found: $AMI_NAME"
-
+      
       # Proceed with AMI copy
-      COPY_NAME="dq-tableau-linux $DRONE_BUILD_NUMBER copied from [Packer Build] - $AMI_ID"
+      COPY_NAME="$AMI_NAME copied from [Packer Build] - $AMI_ID"
 
       aws ec2 copy-image \
         --source-image-id $AMI_ID \
@@ -181,22 +181,6 @@ steps:
       - push
   depends_on:
     - retrieve_aws_secrets_np
-
-# - name: packer-copy-notprod
-#   pull: always
-#   image: *copy-image
-#   commands:
-#   - source ./set_aws_secrets_np.sh
-#   - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
-#   - export HOME=/home/packer
-#   - packer --version
-#   - cd /home/packer
-#   - ./build.sh
-#   when:
-#     event:
-#     - push
-#   depends_on:
-#     - retrieve_aws_secrets_np
 
 - name: retrieve_aws_secrets_prod
   pull: if-not-exists
