@@ -182,6 +182,44 @@ steps:
   depends_on:
     - retrieve_aws_secrets_np
 
+- name: cleanup-ci-ami
+  image: amazon/aws-cli
+  commands:
+    - source ./set_aws_secrets_ci.sh
+    - |
+      # Get the AMI ID built in CI (latest dq-tableau-linux-*)
+      AMI_INFO=$(aws ec2 describe-images \
+        --owners 093401982388 \
+        --filters "Name=name,Values=dq-tableau-linux-*" \
+        --query 'Images | sort_by(@, &CreationDate)[-1].[ImageId,Name]' \
+        --output text)
+
+      AMI_ID=$(echo "$AMI_INFO" | awk '{print $1}')
+      echo "Cleaning up CI AMI: $AMI_ID"
+
+      # Get snapshot IDs
+      SNAPSHOT_IDS=$(aws ec2 describe-images \
+        --image-ids "$AMI_ID" \
+        --query 'Images[0].BlockDeviceMappings[].Ebs.SnapshotId' \
+        --output text)
+
+      # Deregister AMI
+      aws ec2 deregister-image --image-id "$AMI_ID"
+
+      # Delete snapshots
+      for SNAPSHOT_ID in $SNAPSHOT_IDS; do
+        aws ec2 delete-snapshot --snapshot-id "$SNAPSHOT_ID"
+      done
+
+      echo "Cleanup complete for $AMI_ID"
+  when:
+    branch:
+      exclude: [master]
+    event:
+      - push
+  depends_on:
+    - copy-ami-notprod
+
 - name: retrieve_aws_secrets_prod
   pull: if-not-exists
   image: *vault-image
@@ -251,23 +289,44 @@ steps:
   depends_on:
     - retrieve_aws_secrets_prod
 
-# - name: packer-copy-prod
-#   pull: if-not-exists
-#   image: *copy-image
-#   commands:
-#   - source ./set_aws_secrets_prod.sh
-#   - export filters="--owner 093401982388 --filters "Name=name,Values=dq-tableau-linux-*""
-#   - export HOME=/home/packer
-#   - packer --version
-#   - cd /home/packer
-#   - ./build.sh
-#   when:
-#     branch:
-#     - master
-#     event:
-#     - push
-#   depends_on:
-#     - retrieve_aws_secrets_prod
+- name: cleanup-ci-ami-master
+  image: amazon/aws-cli
+  commands:
+    - source ./set_aws_secrets_ci.sh
+    - |
+      # Get the AMI ID built in CI (latest dq-tableau-linux-*)
+      AMI_INFO=$(aws ec2 describe-images \
+        --owners 093401982388 \
+        --filters "Name=name,Values=dq-tableau-linux-*" \
+        --query 'Images | sort_by(@, &CreationDate)[-1].[ImageId,Name]' \
+        --output text)
+
+      AMI_ID=$(echo "$AMI_INFO" | awk '{print $1}')
+      echo "Cleaning up CI AMI: $AMI_ID"
+
+      # Get snapshot IDs
+      SNAPSHOT_IDS=$(aws ec2 describe-images \
+        --image-ids "$AMI_ID" \
+        --query 'Images[0].BlockDeviceMappings[].Ebs.SnapshotId' \
+        --output text)
+
+      # Deregister AMI
+      aws ec2 deregister-image --image-id "$AMI_ID"
+
+      # Delete snapshots
+      for SNAPSHOT_ID in $SNAPSHOT_IDS; do
+        aws ec2 delete-snapshot --snapshot-id "$SNAPSHOT_ID"
+      done
+
+      echo "Cleanup complete for $AMI_ID"
+  when:
+    branch:
+      [master]
+    event:
+      - push
+  depends_on:
+    - copy-ami-notprod
+    - copy-ami-prod
 
 - name: renew-vault-tokens
   pull: if-not-exists
